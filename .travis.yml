@@ -1,0 +1,20 @@
+language: sh
+
+branches:
+  only:
+    - master
+
+services:
+  - docker
+
+script:
+  - make build
+
+notifications:
+  email: false
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker push mendixazure/mendix_azure;
+    fi
