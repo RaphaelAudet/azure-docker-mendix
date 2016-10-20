@@ -125,7 +125,6 @@
     "containerImage": "raphaelaudet/mendix_azure",
     "package_url_str": "[concat(' -e PACKAGE_URL=',parameters('docker_packageUrl_env'))]",
     "config_url_str": "[concat(' -e CONFIG_URL=',parameters('docker_configUrl_env'))]",
-    "dbhostname_str": "[concat(' -e DATABASEHOSTNAME=',parameters('database_server_name'),'.database.windows.net:1433')]",
     "dbdbname_str": "[concat(' -e DATABASE_DB_NAME=',parameters('database_name_mendix'))]",
     "dbusername_str": "[concat(' -e DATABASEUSERNAME=',parameters('sql_administrator_login'))]",
     "dbpassword_str": "[concat(' -e DATABASEPASSWORD=',parameters('sql_administrator_login_password'))]",
@@ -355,7 +354,7 @@
         "typeHandlerVersion": "2.0",
         "autoUpgradeMinorVersion": true,
         "settings": {
-          "commandToExecute": "[concat('docker run -dt --name mendix_azure ',variables('package_url_str'), variables('config_url_str'), variables('dbhostname_str'), variables('dbdbname_str'), variables('dbusername_str'), variables('dbpassword_str'), variables('storage_container_str'), variables('storage_name_str'),' -e STORAGE_ACCOUNTKEY=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('newStorageAccountName')), '2016-01-01').keys[0].value,' -p 80:8000 ', variables('containerImage'))]"
+          "commandToExecute": "[concat('docker run -dt --name mendix_azure ',variables('package_url_str'), variables('config_url_str'), ' -e DATABASEHOSTNAME=',reference(resourceId('Microsoft.SQL/servers/', parameters('database_server_name'))).fullyQualifiedDomainName,':1433', variables('dbdbname_str'), variables('dbusername_str'), variables('dbpassword_str'), variables('storage_container_str'), variables('storage_name_str'),' -e STORAGE_ACCOUNTKEY=\"',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('newStorageAccountName')), '2016-01-01').keys[0].value,\"' -p 80:8000 ', variables('containerImage'))]"
         }
       }
     }
