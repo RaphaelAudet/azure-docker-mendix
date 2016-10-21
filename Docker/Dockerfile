@@ -13,11 +13,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends m2ee-tools open
 RUN useradd -m mendix -b /srv && cd /srv/mendix && mkdir .m2ee data model runtimes web
 RUN cd /srv/mendix/data && mkdir database files model-upload log tmp
 
-RUN chown -R mendix:mendix /srv/mendix
-
 COPY start.sh /start.sh
-COPY m2ee.azure.yaml /home/mendix/.m2ee/m2ee.yaml
+COPY m2ee.azure.yaml /srv/mendix/.m2ee/m2ee.yaml
 RUN chmod +x /start.sh
+
+RUN chown -R mendix:mendix /srv/mendix
 
 ENV MXDATA /srv/mendix/data
 
