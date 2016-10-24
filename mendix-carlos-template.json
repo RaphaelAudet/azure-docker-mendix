@@ -55,11 +55,10 @@
       },
     "variables": {
             "storageAccountName": "[substring(concat('mx', parameters('environment'), resourceGroup().location, 'st', uniqueString(resourceGroup().name)), 0, 24)]",
-            "sqlServerName": "[concat('mx', '-', parameters('environment'), '-', resourceGroup().location, '-', toLower(resourceGroup().name), '-', 'sql')]",
-            "hostname": "[concat('mx', '-', parameters('environment'), '-', resourceGroup().location, '-', toLower(resourceGroup().name), '-', 'vm')]",
+            "sqlServerName": "[concat('mx', '-', parameters('environment'), '-', resourceGroup().location, '-', 'sql')]",
+            "hostname": "[concat('mx', '-', parameters('environment'), '-', resourceGroup().location, '-', 'vm')]",
             "hostStorage": "[concat(uniqueString(resourceGroup().name), 'vmst')]",
             "hostVirtualNetwork": "[concat(variables('hostname'), '-VirtualNetwork')]",
-            "dockerExtensionNameResource" : "[concat(variables('hostname'), '/DockerExtension')]",
             "databaseNameResource": "[concat(variables('sqlServerName'), '/', parameters('databaseName'))]",
             "mdaUrlScriptEnvVar": "[concat(' -e PACKAGE_URL=', parameters('appModelUrl'))]",
             "configFileUrlScriptEnvVar": "[concat(' -e CONFIG_URL=', parameters('appConfigUrl'))]",
@@ -257,7 +256,7 @@
               },
               {
                 "type": "Microsoft.Compute/virtualMachines/extensions",
-                "name": "[variables('dockerExtensionNameResource')]",
+                "name": "[concat(variables('hostname'), '/DockerExtension')]",
                 "apiVersion": "2015-05-01-preview",
                 "location": "[resourceGroup().location]",
                 "dependsOn": [
