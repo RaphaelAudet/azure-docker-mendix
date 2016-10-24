@@ -54,11 +54,11 @@
            }
       },
     "variables": {
-            "storageAccountName": "[substring(concat('mx', parameters('environment'), resourceGroup().location, 'st', uniqueString(resourceGroup().name)), 0, 24)]",
-            "sqlServerName": "[concat('mx', '-', parameters('environment'), '-', resourceGroup().location, '-', 'sql')]",
-            "hostname": "[concat('mx', '-', parameters('environment'), '-', resourceGroup().location, '-', 'vm')]",
+            "storageAccountName": "[substring(concat('mx', parameters('environment'), 'st', uniqueString(resourceGroup().name)), 0, 20)]",
+            "sqlServerName": "[concat('mx', '-', parameters('environment'), '-', substring(uniqueString(resourceGroup().name), 0, 10), '-', 'sql')]",
+            "hostname": "[concat('mx', '-', parameters('environment'), '-', substring(uniqueString(resourceGroup().name), 0, 10), '-', 'vm')]",
             "hostStorage": "[concat(uniqueString(resourceGroup().name), 'vmst')]",
-            "hostVirtualNetwork": "[concat(variables('hostname'), '-VirtualNetwork')]",
+            "hostVirtualNetwork": "[concat(variables('hostname'), '-vnet')]",
             "databaseNameResource": "[concat(variables('sqlServerName'), '/', parameters('databaseName'))]",
             "mdaUrlScriptEnvVar": "[concat(' -e PACKAGE_URL=', parameters('appModelUrl'))]",
             "configFileUrlScriptEnvVar": "[concat(' -e CONFIG_URL=', parameters('appConfigUrl'))]",
@@ -143,7 +143,7 @@
               {
                   "apiVersion": "2015-06-15",
                   "type": "Microsoft.Network/publicIPAddresses",
-                  "name": "[concat(variables('hostname'), '-PublicIP')]",
+                  "name": "[concat(variables('hostname'), '-pip')]",
                   "location": "[resourceGroup().location]",
                   "tags": {
                       "displayName": "PublicIPAddress"
@@ -182,14 +182,14 @@
               {
                   "apiVersion": "2015-06-15",
                   "type": "Microsoft.Network/networkInterfaces",
-                  "name": "[concat(variables('hostname'), '-NetworkInterface')]",
+                  "name": "[concat(variables('hostname'), '-nic')]",
                   "location": "[resourceGroup().location]",
                   "dependsOn": [
-                      "[concat('Microsoft.Network/publicIPAddresses/', variables('hostname'), '-PublicIP')]",
+                      "[concat('Microsoft.Network/publicIPAddresses/', variables('hostname'), '-pip')]",
                       "[concat('Microsoft.Network/virtualNetworks/', variables('hostVirtualNetwork'))]"
                   ],
                   "tags": {
-                      "displayName": "[concat(variables('hostname'), '-NetworkInterface')]"
+                      "displayName": "[concat(variables('hostname'), '-nic')]"
                   },
                   "properties": {
                       "ipConfigurations": [
@@ -198,7 +198,7 @@
                               "properties": {
                                   "privateIPAllocationMethod": "Dynamic",
                                   "publicIPAddress": {
-                                      "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('hostname'), '-PublicIP'))]"
+                                      "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('hostname'), '-pip'))]"
                                   },
                                   "subnet": {
                                       "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('hostVirtualNetwork')), '/subnets/', variables('hostVirtualNetwork'), '-Subnet')]"
@@ -215,7 +215,7 @@
                   "location": "[resourceGroup().location]",
                   "dependsOn": [
                       "[concat('Microsoft.Storage/storageAccounts/', variables('hostStorage'))]",
-                      "[concat('Microsoft.Network/networkInterfaces/', variables('hostname'), '-NetworkInterface')]"
+                      "[concat('Microsoft.Network/networkInterfaces/', variables('hostname'), '-nic')]"
                   ],
                   "tags": {
                       "displayName": "[variables('hostname')]"
@@ -248,7 +248,7 @@
                       "networkProfile": {
                           "networkInterfaces": [
                               {
-                                  "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('hostname'), '-NetworkInterface'))]"
+                                  "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('hostname'), '-nic'))]"
                               }
                           ]
                       }
@@ -289,7 +289,7 @@
                   "typeHandlerVersion": "2.0",
                   "autoUpgradeMinorVersion": true,
                   "settings": {
-                    "commandToExecute": "[concat('docker run --name mendix_azure ', variables('mdaUrlScriptEnvVar'), variables('configFileUrlScriptEnvVar'), ' -e DATABASEHOSTNAME=', reference(resourceId('Microsoft.SQL/servers/', variables('sqlServerName'))).fullyQualifiedDomainName, ':1433', variables('databaseNameScriptEnvVar'), variables('databaseUsernameScriptEnvVar'), variables('databasePasswordScriptEnvVar'), variables('storageAccountContainerScriptEnvVar'), variables('storageAccountNameScriptEnvVar'), ' -e STORAGE_ACCOUNTKEY=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2016-01-01').keys[0].value, ' -p 80:8000 ', variables('containerImage'))]"
+                    "commandToExecute": "[concat('docker run -d --name mendix_azure ', variables('mdaUrlScriptEnvVar'), variables('configFileUrlScriptEnvVar'), ' -e DATABASEHOSTNAME=', reference(resourceId('Microsoft.SQL/servers/', variables('sqlServerName'))).fullyQualifiedDomainName, ':1433', variables('databaseNameScriptEnvVar'), variables('databaseUsernameScriptEnvVar'), variables('databasePasswordScriptEnvVar'), variables('storageAccountContainerScriptEnvVar'), variables('storageAccountNameScriptEnvVar'), ' -e STORAGE_ACCOUNTKEY=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2016-01-01').keys[0].value, ' -p 80:8000 ', variables('containerImage'))]"
                   }
                 }
               }
