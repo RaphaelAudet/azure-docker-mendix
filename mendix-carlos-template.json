@@ -280,10 +280,9 @@
                     "displayName": "MendixDeploy for Linux VM"
                 },
                 "dependsOn": [
-                  "[concat('Microsoft.Compute/virtualMachines/extensions', variables('dockerExtensionNameResource'))]",
-                  "[concat('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
-                  "[concat('Microsoft.Sql/servers/databases', variables('databaseNameResource')]"
-
+                  "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('hostname'), 'DockerExtension')]",
+                  "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+                  "[resourceId('Microsoft.Sql/servers/databases/', variables('sqlServerName'), parameters('databaseName'))]"
                 ],
                 "properties": {
                   "publisher": "Microsoft.Azure.Extensions",
@@ -291,7 +290,7 @@
                   "typeHandlerVersion": "2.0",
                   "autoUpgradeMinorVersion": true,
                   "settings": {
-                    "commandToExecute": "[concat('docker run -dt --name mendix_azure ', variables('mdaUrlScriptEnvVar'), variables('configFileUrlScriptEnvVar'), ' -e DATABASEHOSTNAME=', reference(resourceId('Microsoft.SQL/servers/', variables('sqlServerName'))).fullyQualifiedDomainName, ':1433', variables('databaseNameScriptEnvVar'), variables('databaseUsernameScriptEnvVar'), variables('databasePasswordScriptEnvVar'), variables('storageAccountContainerScriptEnvVar'), variables('storageAccountNameScriptEnvVar'), ' -e STORAGE_ACCOUNTKEY=\"',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2016-01-01').keys[0].value, '\" -p 80:8000 ', variables('containerImage'))]"
+                    "commandToExecute": "[concat('docker run --name mendix_azure ', variables('mdaUrlScriptEnvVar'), variables('configFileUrlScriptEnvVar'), ' -e DATABASEHOSTNAME=', reference(resourceId('Microsoft.SQL/servers/', variables('sqlServerName'))).fullyQualifiedDomainName, ':1433', variables('databaseNameScriptEnvVar'), variables('databaseUsernameScriptEnvVar'), variables('databasePasswordScriptEnvVar'), variables('storageAccountContainerScriptEnvVar'), variables('storageAccountNameScriptEnvVar'), ' -e STORAGE_ACCOUNTKEY=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2016-01-01').keys[0].value, ' -p 80:8000 ', variables('containerImage'))]"
                   }
                 }
               }
