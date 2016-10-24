@@ -21,10 +21,10 @@
           "value" : "Password1!"
     },
     "appModelUrl": {
-          "value" : "https://s3-eu-west-1.amazonaws.com/samplemendix/Sample_Mx690Expenses.mda"
+          "value" : "https://cdn.mendix.com/sample/sample-690.mda"
     },
     "appConfigUrl": {
-          "value": "https://s3-eu-west-1.amazonaws.com/samplemendix/m2ee.azure.sample4.yaml"
+          "value": "https://cdn.mendix.com/sample/m2ee.azure-template.yaml"
     }
   }
 }
