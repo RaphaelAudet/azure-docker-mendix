@@ -2,75 +2,75 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-             "environment": {
-                  "type" : "string",
-                  "defaultValue": "dev",
-                  "allowedValues": [ "dev", "tst", "stg", "prd" ],
-                  "metadata": {
-                      "description": "Purpose of the deployment"
-                  }
-             },
-            "databaseUsername": {
-                   "type" : "string",
-                   "metadata": {
-                       "description": "SQL Server Administrator username"
-                   }
-             },
-            "databasePassword": {
-                        "type" : "securestring",
-                        "metadata": {
-                            "description": "SQL Server Administrator password"
-                        }
-            },
-             "databaseName": {
-                  "type" : "string",
-                  "metadata": {
-                      "description": "Application Database Name"
-                  }
-             },
-            "hostAdminUsername": {
-                 "type" : "string",
-                 "metadata": {
-                     "description": "Host Administrator username"
-                 }
-            },
-           "hostAdminPassword": {
-                "type" : "securestring",
+        "environment": {
+            "type" : "string",
+            "defaultValue": "dev",
+            "allowedValues": [ "dev", "tst", "stg", "prd" ],
+            "metadata": {
+                "description": "Purpose of the deployment"
+            }
+        },
+        "databaseUsername": {
+            "type" : "string",
+                "metadata": {
+                    "description": "SQL Server Administrator username"
+                }
+        },
+        "databasePassword": {
+            "type" : "securestring",
+                "metadata": {
+                    "description": "SQL Server Administrator password"
+                }
+        },
+        "databaseName": {
+            "type" : "string",
+                "metadata": {
+                    "description": "Application Database Name"
+                }
+        },
+        "hostAdminUsername": {
+            "type" : "string",
+                "metadata": {
+                    "description": "Host Administrator username"
+                }
+        },
+        "hostAdminPassword": {
+            "type" : "securestring",
                 "metadata": {
                     "description": "Host Administrator password"
                 }
-           },
-           "appModelUrl":  {
-               "type": "String",
-               "metadata": {
-                 "description": "URL to download your Mendix MDA (Model Deployment Application)"
-               }
-           },
-           "appConfigUrl":  {
-               "type": "String",
-               "metadata": {
-                 "description": "URL to download your Mendix configuration file (m2ee.yaml)"
-               }
-           }
-      },
+        },
+        "appModelUrl":  {
+            "type": "String",
+                "metadata": {
+                    "description": "URL to download your Mendix MDA (Model Deployment Application)"
+                }
+        },
+        "appConfigUrl":  {
+           "type": "String",
+                "metadata": {
+                    "description": "URL to download your Mendix configuration file (m2ee.yaml)"
+                }
+        }
+    },
     "variables": {
-            "storageAccountName": "[substring(concat('mx', parameters('environment'), 'st', uniqueString(resourceGroup().name)), 0, 20)]",
-            "sqlServerName": "[concat('mx', '-', parameters('environment'), '-', substring(uniqueString(resourceGroup().name), 0, 10), '-', 'sql')]",
-            "hostname": "[concat('mx', '-', parameters('environment'), '-', substring(uniqueString(resourceGroup().name), 0, 10), '-', 'vm')]",
-            "hostStorage": "[concat(uniqueString(resourceGroup().name), 'vmst')]",
-            "hostVirtualNetwork": "[concat(variables('hostname'), '-vnet')]",
-            "databaseNameResource": "[concat(variables('sqlServerName'), '/', parameters('databaseName'))]",
-            "mdaUrlScriptEnvVar": "[concat(' -e PACKAGE_URL=', parameters('appModelUrl'))]",
-            "configFileUrlScriptEnvVar": "[concat(' -e CONFIG_URL=', parameters('appConfigUrl'))]",
-            "databaseNameScriptEnvVar" : "[concat(' -e DATABASE_DB_NAME=',parameters('databaseName'))]",
-            "databaseUsernameScriptEnvVar": "[concat(' -e DATABASEUSERNAME=', parameters('databaseUsername'))]",
-            "databasePasswordScriptEnvVar": "[concat(' -e DATABASEPASSWORD=', parameters('databasePassword'))]",
-            "storageAccountContainerScriptEnvVar": " -e STORAGE_CONTAINER=mendix-container",
-            "storageAccountNameScriptEnvVar": "[concat(' -e STORAGE_ACCOUNTNAME=', variables('storageAccountName'))]",
-            "containerImage": "mendixazure/mendix_azure"
+        "storageAccountName": "[substring(concat('mx', parameters('environment'), 'st', uniqueString(resourceGroup().name)), 0, 20)]",
+        "sqlServerName": "[concat('mx', '-', parameters('environment'), '-', substring(uniqueString(resourceGroup().name), 0, 10), '-', 'sql')]",
+        "hostname": "[concat('mx', '-', parameters('environment'), '-', substring(uniqueString(resourceGroup().name), 0, 10), '-', 'vm')]",
+        "hostStorage": "[concat(uniqueString(resourceGroup().name), 'vmst')]",
+        "hostVirtualNetwork": "[concat(variables('hostname'), '-vnet')]",
+        "databaseNameResource": "[concat(variables('sqlServerName'), '/', parameters('databaseName'))]",
+        "mdaUrlScriptEnvVar": "[concat(' -e PACKAGE_URL=', parameters('appModelUrl'))]",
+        "configFileUrlScriptEnvVar": "[concat(' -e CONFIG_URL=', parameters('appConfigUrl'))]",
+        "databaseNameScriptEnvVar" : "[concat(' -e DATABASE_DB_NAME=',parameters('databaseName'))]",
+        "databaseUsernameScriptEnvVar": "[concat(' -e DATABASEUSERNAME=', parameters('databaseUsername'))]",
+        "databasePasswordScriptEnvVar": "[concat(' -e DATABASEPASSWORD=', parameters('databasePassword'))]",
+        "storageAccountContainerScriptEnvVar": " -e STORAGE_CONTAINER=mendix-container",
+        "storageAccountNameScriptEnvVar": "[concat(' -e STORAGE_ACCOUNTNAME=', variables('storageAccountName'))]",
+        "containerImage": "mendixazure/mendix_azure"
     },
     "resources": [
-      {
+        {
             "type": "Microsoft.Storage/storageAccounts",
             "name": "[variables('storageAccountName')]",
             "apiVersion": "2015-06-15",
@@ -83,216 +83,216 @@
             }
         },
         {
-              "apiVersion": "2014-04-01-preview",
-              "name": "[variables('sqlServerName')]",
-              "type": "Microsoft.Sql/servers",
+            "apiVersion": "2014-04-01-preview",
+            "name": "[variables('sqlServerName')]",
+            "type": "Microsoft.Sql/servers",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[variables('sqlServerName')]"
+            },
+            "properties": {
+                "administratorLogin": "[parameters('databaseUsername')]",
+                "administratorLoginPassword": "[parameters('databasePassword')]"
+            },
+            "resources": [
+            {
+                "apiVersion": "2014-04-01-preview",
+                "dependsOn": [
+                    "[concat('Microsoft.Sql/servers/', variables('sqlServerName'))]"
+                ],
+                "location": "[resourceGroup().location]",
+                "name": "AllowAllWindowsAzureIps",
+                "properties": {
+                    "startIpAddress": "0.0.0.0",
+                    "endIpAddress": "0.0.0.0"
+                },
+                "type": "firewallrules"
+            }
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases",
+            "name": "[variables('databaseNameResource')]",
+            "apiVersion": "2014-04-01-preview",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "parameters('databaseName')"
+            },
+            "dependsOn": [
+                "[variables('sqlServerName')]"
+            ],
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "edition": "Basic",
+                "maxSizeBytes": "1073741824",
+                "requestedServiceObjectiveName": "Basic"
+            }
+        },
+        {
+              "type": "Microsoft.Storage/storageAccounts",
+              "name": "[variables('hostStorage')]",
+              "apiVersion": "2015-06-15",
               "location": "[resourceGroup().location]",
               "tags": {
-                  "displayName": "[variables('sqlServerName')]"
+                  "displayName": "[variables('hostname')] Storage Account"
               },
               "properties": {
-                  "administratorLogin": "[parameters('databaseUsername')]",
-                  "administratorLoginPassword": "[parameters('databasePassword')]"
-              },
-              "resources": [
-                  {
-                      "apiVersion": "2014-04-01-preview",
-                      "dependsOn": [
-                          "[concat('Microsoft.Sql/servers/', variables('sqlServerName'))]"
-                      ],
-                      "location": "[resourceGroup().location]",
-                      "name": "AllowAllWindowsAzureIps",
-                      "properties": {
-                          "startIpAddress": "0.0.0.0",
-                          "endIpAddress": "0.0.0.0"
-                      },
-                      "type": "firewallrules"
-                  }
-              ]
-          },
-          {
-                "type": "Microsoft.Sql/servers/databases",
-                "name": "[variables('databaseNameResource')]",
-                "apiVersion": "2014-04-01-preview",
-                "location": "[resourceGroup().location]",
-                "tags": {
-                    "displayName": "parameters('databaseName')"
-                },
-                "dependsOn": [
-                    "[variables('sqlServerName')]"
-                ],
-                "properties": {
-                    "collation": "SQL_Latin1_General_CP1_CI_AS",
-                    "edition": "Basic",
-                    "maxSizeBytes": "1073741824",
-                    "requestedServiceObjectiveName": "Basic"
-                }
-            },
-            {
-                  "type": "Microsoft.Storage/storageAccounts",
-                  "name": "[variables('hostStorage')]",
-                  "apiVersion": "2015-06-15",
-                  "location": "[resourceGroup().location]",
-                  "tags": {
-                      "displayName": "[variables('hostname')] Storage Account"
-                  },
-                  "properties": {
-                      "accountType": "Standard_LRS"
-                  }
-              },
-              {
-                  "apiVersion": "2015-06-15",
-                  "type": "Microsoft.Network/publicIPAddresses",
-                  "name": "[concat(variables('hostname'), '-pip')]",
-                  "location": "[resourceGroup().location]",
-                  "tags": {
-                      "displayName": "PublicIPAddress"
-                  },
-                  "properties": {
-                      "publicIPAllocationMethod": "Dynamic",
-                      "dnsSettings": {
-                          "domainNameLabel": "[toLower(variables('hostname'))]"
-                      }
-                  }
-              },
-              {
-                  "apiVersion": "2015-06-15",
-                  "type": "Microsoft.Network/virtualNetworks",
-                  "name": "[variables('hostVirtualNetwork')]",
-                  "location": "[resourceGroup().location]",
-                  "tags": {
-                      "displayName": "VirtualNetwork"
-                  },
-                  "properties": {
-                      "addressSpace": {
-                          "addressPrefixes": [
-                              "10.0.0.0/16"
-                          ]
-                      },
-                      "subnets": [
-                          {
-                              "name": "[concat(variables('hostVirtualNetwork'), '-Subnet')]",
-                              "properties": {
-                                  "addressPrefix": "10.0.0.0/24"
-                              }
-                          }
-                      ]
-                  }
-              },
-              {
-                  "apiVersion": "2015-06-15",
-                  "type": "Microsoft.Network/networkInterfaces",
-                  "name": "[concat(variables('hostname'), '-nic')]",
-                  "location": "[resourceGroup().location]",
-                  "dependsOn": [
-                      "[concat('Microsoft.Network/publicIPAddresses/', variables('hostname'), '-pip')]",
-                      "[concat('Microsoft.Network/virtualNetworks/', variables('hostVirtualNetwork'))]"
-                  ],
-                  "tags": {
-                      "displayName": "[concat(variables('hostname'), '-nic')]"
-                  },
-                  "properties": {
-                      "ipConfigurations": [
-                          {
-                              "name": "ipconfig1",
-                              "properties": {
-                                  "privateIPAllocationMethod": "Dynamic",
-                                  "publicIPAddress": {
-                                      "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('hostname'), '-pip'))]"
-                                  },
-                                  "subnet": {
-                                      "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('hostVirtualNetwork')), '/subnets/', variables('hostVirtualNetwork'), '-Subnet')]"
-                                  }
-                              }
-                          }
-                      ]
-                  }
-              },
-              {
-                  "apiVersion": "2015-06-15",
-                  "type": "Microsoft.Compute/virtualMachines",
-                  "name": "[variables('hostname')]",
-                  "location": "[resourceGroup().location]",
-                  "dependsOn": [
-                      "[concat('Microsoft.Storage/storageAccounts/', variables('hostStorage'))]",
-                      "[concat('Microsoft.Network/networkInterfaces/', variables('hostname'), '-nic')]"
-                  ],
-                  "tags": {
-                      "displayName": "[variables('hostname')]"
-                  },
-                  "properties": {
-                      "hardwareProfile": {
-                          "vmSize": "Standard_D1"
-                      },
-                      "osProfile": {
-                          "computerName": "[variables('hostname')]",
-                          "adminUsername": "[parameters('hostAdminUsername')]",
-                          "adminPassword": "[parameters('hostAdminPassword')]"
-                      },
-                      "storageProfile": {
-                          "imageReference": {
-                              "publisher": "Canonical",
-                              "offer": "UbuntuServer",
-                              "sku": "14.04.2-LTS",
-                              "version": "latest"
-                          },
-                          "osDisk": {
-                              "name": "[concat(variables('hostname'), '-OSDisk')]",
-                              "vhd": {
-                                  "uri": "[concat('http://', toLower(variables('hostStorage')), '.blob.core.windows.net/vhds/', variables('hostname'), '-OSDisk.vhd')]"
-                              },
-                              "caching": "ReadWrite",
-                              "createOption": "FromImage"
-                          }
-                      },
-                      "networkProfile": {
-                          "networkInterfaces": [
-                              {
-                                  "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('hostname'), '-nic'))]"
-                              }
-                          ]
-                      }
-                  }
-              },
-              {
-                "type": "Microsoft.Compute/virtualMachines/extensions",
-                "name": "[concat(variables('hostname'), '/DockerExtension')]",
-                "apiVersion": "2015-05-01-preview",
-                "location": "[resourceGroup().location]",
-                "dependsOn": [
-                  "[concat('Microsoft.Compute/virtualMachines/', variables('hostname'))]"
-                ],
-                "properties": {
-                  "publisher": "Microsoft.Azure.Extensions",
-                  "type": "DockerExtension",
-                  "typeHandlerVersion": "1.0",
-                  "autoUpgradeMinorVersion": true,
-                  "settings": {}
-                }
-              },
-              {
-                "type": "Microsoft.Compute/virtualMachines/extensions",
-                "name": "[concat(variables('hostname'), '/MendixDeploy')]",
-                "apiVersion": "2015-05-01-preview",
-                "location": "[resourceGroup().location]",
-                "tags": {
-                    "displayName": "MendixDeploy for Linux VM"
-                },
-                "dependsOn": [
-                  "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('hostname'), 'DockerExtension')]",
-                  "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-                  "[resourceId('Microsoft.Sql/servers/databases/', variables('sqlServerName'), parameters('databaseName'))]"
-                ],
-                "properties": {
-                  "publisher": "Microsoft.Azure.Extensions",
-                  "type": "CustomScript",
-                  "typeHandlerVersion": "2.0",
-                  "autoUpgradeMinorVersion": true,
-                  "settings": {
-                    "commandToExecute": "[concat('docker run -d --name mendix_azure ', variables('mdaUrlScriptEnvVar'), variables('configFileUrlScriptEnvVar'), ' -e DATABASEHOSTNAME=', reference(resourceId('Microsoft.SQL/servers/', variables('sqlServerName'))).fullyQualifiedDomainName, ':1433', variables('databaseNameScriptEnvVar'), variables('databaseUsernameScriptEnvVar'), variables('databasePasswordScriptEnvVar'), variables('storageAccountContainerScriptEnvVar'), variables('storageAccountNameScriptEnvVar'), ' -e STORAGE_ACCOUNTKEY=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2016-01-01').keys[0].value, ' -p 80:8000 ', variables('containerImage'))]"
-                  }
-                }
+                  "accountType": "Standard_LRS"
               }
+        },
+        {
+              "apiVersion": "2015-06-15",
+              "type": "Microsoft.Network/publicIPAddresses",
+              "name": "[concat(variables('hostname'), '-pip')]",
+              "location": "[resourceGroup().location]",
+              "tags": {
+                  "displayName": "PublicIPAddress"
+              },
+              "properties": {
+                  "publicIPAllocationMethod": "Dynamic",
+                  "dnsSettings": {
+                      "domainNameLabel": "[toLower(variables('hostname'))]"
+                  }
+              }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[variables('hostVirtualNetwork')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "VirtualNetwork"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[concat(variables('hostVirtualNetwork'), '-Subnet')]",
+                        "properties": {
+                            "addressPrefix": "10.0.0.0/24"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[concat(variables('hostname'), '-nic')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIPAddresses/', variables('hostname'), '-pip')]",
+                "[concat('Microsoft.Network/virtualNetworks/', variables('hostVirtualNetwork'))]"
+            ],
+            "tags": {
+                "displayName": "[concat(variables('hostname'), '-nic')]"
+            },
+            "properties": {
+                "ipConfigurations": [
+                 {
+                    "name": "ipconfig1",
+                    "properties": {
+                        "privateIPAllocationMethod": "Dynamic",
+                        "publicIPAddress": {
+                            "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('hostname'), '-pip'))]"
+                        },
+                        "subnet": {
+                            "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('hostVirtualNetwork')), '/subnets/', variables('hostVirtualNetwork'), '-Subnet')]"
+                        }
+                    }
+                }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[variables('hostname')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', variables('hostStorage'))]",
+                "[concat('Microsoft.Network/networkInterfaces/', variables('hostname'), '-nic')]"
+            ],
+            "tags": {
+                "displayName": "[variables('hostname')]"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_D1"
+                },
+                "osProfile": {
+                    "computerName": "[variables('hostname')]",
+                    "adminUsername": "[parameters('hostAdminUsername')]",
+                    "adminPassword": "[parameters('hostAdminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                      "publisher": "Canonical",
+                      "offer": "UbuntuServer",
+                      "sku": "14.04.2-LTS",
+                      "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat(variables('hostname'), '-OSDisk')]",
+                        "vhd": {
+                            "uri": "[concat('http://', toLower(variables('hostStorage')), '.blob.core.windows.net/vhds/', variables('hostname'), '-OSDisk.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                    {
+                        "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('hostname'), '-nic'))]"
+                    }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(variables('hostname'), '/DockerExtension')]",
+            "apiVersion": "2015-05-01-preview",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('hostname'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "DockerExtension",
+                "typeHandlerVersion": "1.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {}
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(variables('hostname'), '/MendixDeploy')]",
+            "apiVersion": "2015-05-01-preview",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "MendixDeploy for Linux VM"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('hostname'), 'DockerExtension')]",
+                "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+                "[resourceId('Microsoft.Sql/servers/databases/', variables('sqlServerName'), parameters('databaseName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "commandToExecute": "[concat('docker run -d --name mendix_azure ', variables('mdaUrlScriptEnvVar'), variables('configFileUrlScriptEnvVar'), ' -e DATABASEHOSTNAME=', reference(resourceId('Microsoft.SQL/servers/', variables('sqlServerName'))).fullyQualifiedDomainName, ':1433', variables('databaseNameScriptEnvVar'), variables('databaseUsernameScriptEnvVar'), variables('databasePasswordScriptEnvVar'), variables('storageAccountContainerScriptEnvVar'), variables('storageAccountNameScriptEnvVar'), ' -e STORAGE_ACCOUNTKEY=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2016-01-01').keys[0].value, ' -p 80:8000 ', variables('containerImage'))]"
+                }
+            }
+        }
     ],
     "outputs": {
     }
