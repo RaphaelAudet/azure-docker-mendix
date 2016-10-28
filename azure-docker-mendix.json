@@ -59,15 +59,7 @@
         "hostname": "[concat('mx', '-', parameters('environment'), '-', substring(uniqueString(resourceGroup().name), 0, 10), '-', 'vm')]",
         "hostStorage": "[concat(uniqueString(resourceGroup().name), 'vmst')]",
         "hostVirtualNetwork": "[concat(variables('hostname'), '-vnet')]",
-        "databaseNameResource": "[concat(variables('sqlServerName'), '/', parameters('databaseName'))]",
-        "mdaUrlScriptEnvVar": "[concat(' -e PACKAGE_URL=', parameters('appModelUrl'))]",
-        "configFileUrlScriptEnvVar": "[concat(' -e CONFIG_URL=', parameters('appConfigUrl'))]",
-        "databaseNameScriptEnvVar" : "[concat(' -e DATABASE_DB_NAME=',parameters('databaseName'))]",
-        "databaseUsernameScriptEnvVar": "[concat(' -e DATABASEUSERNAME=', parameters('databaseUsername'))]",
-        "databasePasswordScriptEnvVar": "[concat(' -e DATABASEPASSWORD=', parameters('databasePassword'))]",
-        "storageAccountContainerScriptEnvVar": " -e STORAGE_CONTAINER=mendix-container",
-        "storageAccountNameScriptEnvVar": "[concat(' -e STORAGE_ACCOUNTNAME=', variables('storageAccountName'))]",
-        "containerImage": "mendixazure/mendix_azure"
+        "databaseNameResource": "[concat(variables('sqlServerName'), '/', parameters('databaseName'))]"
     },
     "resources": [
         {
@@ -267,33 +259,56 @@
                 "type": "DockerExtension",
                 "typeHandlerVersion": "1.0",
                 "autoUpgradeMinorVersion": true,
-                "settings": {}
-            }
-        },
-        {
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(variables('hostname'), '/MendixDeploy')]",
-            "apiVersion": "2015-05-01-preview",
-            "location": "[resourceGroup().location]",
-            "tags": {
-                "displayName": "MendixDeploy for Linux VM"
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('hostname'), 'DockerExtension')]",
-                "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.Sql/servers/databases/', variables('sqlServerName'), parameters('databaseName'))]"
-            ],
-            "properties": {
-                "publisher": "Microsoft.Azure.Extensions",
-                "type": "CustomScript",
-                "typeHandlerVersion": "2.0",
-                "autoUpgradeMinorVersion": true,
+                "protectedSettings": {
+                    "environment": {
+                        "PACKAGE_URL": "[parameters('appModelUrl')]",
+                        "CONFIG_URL": "https://s3-eu-west-1.amazonaws.com/samplemendix/m2ee.azure.sample3.yaml",
+                        "DATABASE_DB_NAME": "[parameters('databaseName')]",
+                        "DATABASEUSERNAME": "[parameters('databaseUsername')]",
+                        "DATABASEPASSWORD": "[parameters('databasePassword')]",
+                        "STORAGE_CONTAINER": "mendix-container",
+                        "STORAGE_ACCOUNTNAME": "[variables('storageAccountName')]"
+                    }
+                },
                 "settings": {
-                    "commandToExecute": "[concat('docker run -d --name mendix_azure ', variables('mdaUrlScriptEnvVar'), variables('configFileUrlScriptEnvVar'), ' -e DATABASEHOSTNAME=', reference(resourceId('Microsoft.SQL/servers/', variables('sqlServerName'))).fullyQualifiedDomainName, ':1433', variables('databaseNameScriptEnvVar'), variables('databaseUsernameScriptEnvVar'), variables('databasePasswordScriptEnvVar'), variables('storageAccountContainerScriptEnvVar'), variables('storageAccountNameScriptEnvVar'), ' -e STORAGE_ACCOUNTKEY=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2016-01-01').keys[0].value, ' -p 80:8000 ', variables('containerImage'))]"
+                    "compose": {
+                        "web": {
+                            "image": "mendixazure/nginx_azure",
+                            "ports": [
+                                "80:80",
+                                "443:443"
+                            ]
+                            ,
+                            "links": [
+                                "mendixapp"
+                            ]
+
+                        },
+                        "mendixapp": {
+                            "image": "mendixazure/mendix_azure",
+                            "environment": [
+                                "PACKAGE_URL",
+                                "CONFIG_URL",
+                                "DATABASE_DB_NAME",
+                                "DATABASEUSERNAME",
+                                "DATABASEPASSWORD",
+                                "STORAGE_CONTAINER",
+                                "STORAGE_ACCOUNTNAME"
+                            ],
+                            "ports": [
+                                "8000"
+                            ]
+                        }
+                    }
                 }
             }
         }
     ],
     "outputs": {
+        "customData": {
+            "type": "string",
+            "value": "[concat(variables('hostname'), '-pip')]"
+        }
+
     }
 }

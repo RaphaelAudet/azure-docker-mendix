@@ -6,10 +6,10 @@ PACKAGE_PATH=/srv/mendix/data/model-upload
 PACKAGE_FILE=$PACKAGE_PATH/application.mda
 CONFIG_FILE=/srv/mendix/.m2ee/m2ee.yaml
 
-/usr/bin/curl -o "$PACKAGE_FILE" "$PACKAGE_URL"
+wget "$PACKAGE_URL" -O "$PACKAGE_FILE"
 
 if [ ! -z "$CONFIG_URL" ]; then
-  /usr/bin/curl -o "$CONFIG_FILE" "$CONFIG_URL"
+  wget "$CONFIG_URL" -O "$CONFIG_FILE"
 fi
 
 sed -i "s/DATABASEHOSTNAME/$DATABASEHOSTNAME/" $CONFIG_FILE
