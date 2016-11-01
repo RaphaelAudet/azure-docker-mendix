@@ -273,7 +273,7 @@
                 "settings": {
                     "compose": {
                         "web": {
-                            "image": "mendixazure/nginx_azure",
+                            "image": "mendix/nginx_azure",
                             "ports": [
                                 "80:80",
                                 "443:443"
@@ -285,7 +285,7 @@
 
                         },
                         "mendixapp": {
-                            "image": "mendixazure/mendix_azure",
+                            "image": "mendix/mendix_azure",
                             "environment": [
                                 "PACKAGE_URL",
                                 "CONFIG_URL",
