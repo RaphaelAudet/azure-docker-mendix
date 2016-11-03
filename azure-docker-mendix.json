@@ -51,6 +51,12 @@
                 "metadata": {
                     "description": "URL to download your Mendix configuration file (m2ee.yaml)"
                 }
+        },
+        "adminPassword": {
+            "type" : "securestring",
+                "metadata": {
+                    "description": "Mendix Application Administrative account (MxAdmin) password"
+                }
         }
     },
     "variables": {
@@ -267,7 +273,8 @@
                         "DATABASEUSERNAME": "[parameters('databaseUsername')]",
                         "DATABASEPASSWORD": "[parameters('databasePassword')]",
                         "STORAGE_CONTAINER": "mendix-container",
-                        "STORAGE_ACCOUNTNAME": "[variables('storageAccountName')]"
+                        "STORAGE_ACCOUNTNAME": "[variables('storageAccountName')]",
+                        "ADMIN_PASSWORD": "[parameters('adminPassword')]"
                     }
                 },
                 "settings": {
@@ -285,7 +292,7 @@
 
                         },
                         "mendixapp": {
-                            "image": "mendix/mendix_azure",
+                            "image": "mendix/mendix_azure:custom_m2ee",
                             "environment": [
                                 "PACKAGE_URL",
                                 "CONFIG_URL",
@@ -293,7 +300,8 @@
                                 "DATABASEUSERNAME",
                                 "DATABASEPASSWORD",
                                 "STORAGE_CONTAINER",
-                                "STORAGE_ACCOUNTNAME"
+                                "STORAGE_ACCOUNTNAME",
+                                "ADMIN_PASSWORD"
                             ],
                             "ports": [
                                 "8000"

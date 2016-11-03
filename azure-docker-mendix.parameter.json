@@ -25,6 +25,9 @@
         },
         "appConfigUrl": {
             "value": "https://cdn.mendix.com/sample/m2ee.azure-template.yaml"
+        },
+        "adminPassword": {
+            "value": "pAssw0rd!3"
         }
     }
 }

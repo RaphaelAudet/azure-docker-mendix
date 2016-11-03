@@ -6,6 +6,8 @@ PACKAGE_PATH=/srv/mendix/data/model-upload
 PACKAGE_FILE=$PACKAGE_PATH/application.mda
 CONFIG_FILE=/srv/mendix/.m2ee/m2ee.yaml
 
+ADMIN_PASSWORD=$ADMIN_PASSWORD
+
 APP_PING_PORT=8000
 APP_PING_PERIOD=60
 
@@ -26,6 +28,7 @@ sed -i "s/STORAGE_ACCOUNTKEY/${STORAGE_ACCOUNTKEY//\//\\/}/" $CONFIG_FILE
 m2ee --yolo unpack application.mda
 m2ee download_runtime
 m2ee --yolo start
+m2ee --yolo create_admin_user $ADMIN_PASSWORD
 
 while [ `nc -z 127.0.0.1 $APP_PING_PORT  && echo $? || echo $?` -eq 0 ]
 do

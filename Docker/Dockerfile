@@ -15,6 +15,7 @@ RUN cd /srv/mendix/data && mkdir database files model-upload log tmp
 
 COPY start.sh /start.sh
 COPY m2ee.azure.yaml /srv/mendix/.m2ee/m2ee.yaml
+COPY m2ee.experimental /usr/bin/m2ee
 RUN chmod +x /start.sh
 
 RUN chown -R mendix:mendix /srv/mendix
