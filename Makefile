@@ -1,11 +1,11 @@
 build-azure:
-	cd Docker && docker build -t mendixazure/mendix_azure  .
+	cd Docker && docker build -t mendix/mendix_azure:custom_m2ee  .
 
 push-azure: build-azure
-	docker push mendixazure/mendix_azure
+	docker push mendix/mendix_azure:custom_m2ee
 
 build-nginx:
-	cd Docker-Nginx && docker build -t mendixazure/nginx_azure  .
+	cd Docker-Nginx && docker build -t mendix/nginx_azure  .
 
 push-nginx: build-nginx
-	docker push mendixazure/nginx_azure
+	docker push mendix/nginx_azure
