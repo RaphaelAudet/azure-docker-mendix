@@ -1,6 +1,6 @@
 # Dockerfile
 #
-# VERSION               0.2
+# VERSION               0.3
 
 FROM debian:jessie-backports
 MAINTAINER Raphael Audet <raphael.audet@mendix.com>

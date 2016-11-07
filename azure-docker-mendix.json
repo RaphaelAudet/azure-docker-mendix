@@ -306,6 +306,9 @@
                             "ports": [
                                 "8000"
                             ]
+                        },
+                        "vpcdeployer": {
+                            "image": "mendix/vpcdeployer"
                         }
                     }
                 }

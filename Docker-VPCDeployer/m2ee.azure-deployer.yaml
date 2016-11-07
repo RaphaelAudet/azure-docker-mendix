@@ -1,0 +1,30 @@
+mxnode:
+ mxjar_repo: [/srv/mendix/runtimes/]
+m2ee:
+ app_name: Mendix Project
+ app_base: /srv/mendix
+ admin_port: 9001
+ admin_pass: mendix!
+ runtime_port: 9000
+ runtime_listen_addresses: "::"
+ javaopts: [
+   "-Dfile.encoding=UTF-8", "-XX:MaxPermSize=128M", "-Xmx512M", "-Xms512M",
+   "-Djava.io.tmpdir=/srv/mendix/data/tmp",
+ ]
+ logfile: /srv/mendix/data/log/m2ee.log
+logging:
+ - # example of file logging by the platform itself
+   name: FileSubscriber
+   type: file
+   autosubscribe: INFO
+   filename: /srv/mendix/data/log/app.log
+   max_size: 10485760 # bytes(!!)
+   max_rotation: 7
+mxruntime:
+ DatabaseType: VPC_DB_TYPE
+ DatabaseHost: VPC_DB_HOSTNAME
+ DatabaseName: VPC_DB_DATABASE
+ DatabaseUserName: VPC_DB_USERNAME
+ DatabasePassword: VPC_DB_PASSWORD
+ MicroflowConstants:
+  VPCDeployer.AppModel_Shared_Folder: "/opt/mendix"
