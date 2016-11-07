@@ -274,7 +274,16 @@
                         "DATABASEPASSWORD": "[parameters('databasePassword')]",
                         "STORAGE_CONTAINER": "mendix-container",
                         "STORAGE_ACCOUNTNAME": "[variables('storageAccountName')]",
-                        "ADMIN_PASSWORD": "[parameters('adminPassword')]"
+                        "ADMIN_PASSWORD": "[parameters('adminPassword')]",
+                        "VPC_PACKAGE_URL": "https://cdn.mendix.com/sample/VPCDeployer.mda",
+                        "VPC_DB_TYPE": "PostgreSQL",
+                        "VPC_DB_HOSTNAME": "deployerdb:5432",
+                        "VPC_DB_DATABASE": "mendix",
+                        "VPC_DB_USERNAME": "mendix",
+                        "VPC_DB_PASSWORD": "mendix",
+                        "VPC_ADMIN_PASSWORD": "kfjfkjwkF3@",
+                        "POSTGRES_USER": "mendix",
+                        "POSTGRES_PASSWORD": "mendix"
                     }
                 },
                 "settings": {
@@ -287,7 +296,8 @@
                             ]
                             ,
                             "links": [
-                                "mendixapp"
+                                "mendixapp",
+                                "vpcdeployer"
                             ]
 
                         },
@@ -305,10 +315,42 @@
                             ],
                             "ports": [
                                 "8000"
+                            ],
+                            "volumes": [
+                                "./opt/mendix/dev:/opt/mendix/dev",
+                                "./opt/mendix/test:/opt/mendix/test",
+                                "./opt/mendix/prod:/opt/mendix/prod"
                             ]
                         },
                         "vpcdeployer": {
-                            "image": "mendix/vpcdeployer"
+                            "image": "mendix/vpcdeployer",
+                            "environment": [
+                                "VPC_PACKAGE_URL",
+                                "VPC_DB_TYPE",
+                                "VPC_DB_HOSTNAME",
+                                "VPC_DB_DATABASE",
+                                "VPC_DB_USERNAME",
+                                "VPC_DB_PASSWORD",
+                                "VPC_ADMIN_PASSWORD"
+                            ],
+                            "ports": [
+                                "9000"
+                            ],
+                            "links": [
+                                "deployerdb"
+                            ],
+                            "volumes": [
+                                "./opt/mendix/dev:/opt/mendix/dev",
+                                "./opt/mendix/test:/opt/mendix/test",
+                                "./opt/mendix/prod:/opt/mendix/prod"
+                            ]
+                        },
+                        "deployerdb": {
+                            "image": "postgres",
+                            "environment": [
+                                "POSTGRES_USER",
+                                "POSTGRES_PASSWORD"
+                            ]
                         }
                     }
                 }
