@@ -11,9 +11,6 @@
         "databasePassword": {
             "value" : "Password1!"
         },
-        "databaseName": {
-            "value" : "mxdb"
-        },
         "hostAdminUsername": {
             "value" : "MxAdmin"
         },
@@ -26,7 +23,7 @@
         "appConfigUrl": {
             "value": "https://cdn.mendix.com/sample/m2ee.azure-template.yaml"
         },
-        "adminPassword": {
+        "mxAdminPassword": {
             "value": "pAssw0rd!3"
         }
     }

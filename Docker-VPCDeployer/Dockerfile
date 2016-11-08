@@ -1,9 +1,9 @@
 # Dockerfile
 #
-# VERSION               0.1
+# VERSION               0.2
 
 FROM debian:jessie-backports
-MAINTAINER Raphael Audet <raphael.audet@mendix.com>
+MAINTAINER Mendix Smart connectors <smartconnectors@mendix.com>
 
 RUN apt-key adv --fetch-keys http://packages.mendix.com/mendix-debian-archive-key.asc
 RUN echo "deb http://packages.mendix.com/platform/debian/ jessie main" > /etc/apt/sources.list.d/mendix.list
@@ -13,10 +13,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends m2ee-tools open
 RUN useradd -m mendix -b /srv && cd /srv/mendix && mkdir .m2ee data model runtimes web
 RUN cd /srv/mendix/data && mkdir database files model-upload log tmp
 
-COPY start.sh /start.sh
-COPY m2ee.azure-deployer.yaml /srv/mendix/.m2ee/m2ee.yaml
+COPY vpcdeployer.mda /srv/mendix/data/model-upload/application.mda
+COPY vpcdeployer.yaml /srv/mendix/.m2ee/m2ee.yaml
 COPY m2ee.experimental /usr/bin/m2ee
+COPY app-security.policy /srv/mendix/
+COPY start.sh /start.sh
 RUN chmod +x /start.sh
+
 RUN mkdir -p /opt/mendix/dev /opt/mendix/test /opt/mendix/prod
 
 RUN chown -R mendix:mendix /srv/mendix

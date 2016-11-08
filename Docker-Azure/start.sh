@@ -1,29 +1,54 @@
 #!/bin/bash
 
-set -ex
+set -e
 
-PACKAGE_PATH=/srv/mendix/data/model-upload
-PACKAGE_FILE=$PACKAGE_PATH/application.mda
-CONFIG_FILE=/srv/mendix/.m2ee/m2ee.yaml
+if [ -z $PACKAGE_SRC ]; then PACKAGE_SRC=/opt/mendix/prod/application.mda; fi
+if [ -z $CONFIG_SRC ]; then CONFIG_SRC=/opt/mendix/prod/m2ee.yaml; fi
 
-ADMIN_PASSWORD=$ADMIN_PASSWORD
+PACKAGE_DEST=/srv/mendix/data/model-upload/application.mda
+CONFIG_DEST=/srv/mendix/.m2ee/m2ee.yaml
 
 APP_PING_PORT=8000
 APP_PING_PERIOD=60
 
-wget "$PACKAGE_URL" -O "$PACKAGE_FILE"
+ADMIN_PASSWORD=$ADMIN_PASSWORD
 
-if [ ! -z "$CONFIG_URL" ]; then
-  wget "$CONFIG_URL" -O "$CONFIG_FILE"
+if [ -f $PACKAGE_SRC ]
+then
+    cp $PACKAGE_SRC $PACKAGE_DEST
+else
+    if [ ! -z "$PACKAGE_URL" ]
+    then
+        wget "$PACKAGE_URL" -O "$PACKAGE_DEST"
+    else
+        echo no PACKAGE_SRC and no PACKAGE_URL, exiting
+        exit 1
+    fi
 fi
 
-sed -i "s/DATABASEHOSTNAME/$DATABASEHOSTNAME/" $CONFIG_FILE
-sed -i "s/DATABASE_DB_NAME/$DATABASE_DB_NAME/" $CONFIG_FILE
-sed -i "s/DATABASEUSERNAME/$DATABASEUSERNAME/" $CONFIG_FILE
-sed -i "s/DATABASEPASSWORD/$DATABASEPASSWORD/" $CONFIG_FILE
-sed -i "s/STORAGE_CONTAINER/$STORAGE_CONTAINER/" $CONFIG_FILE
-sed -i "s/STORAGE_ACCOUNTNAME/$STORAGE_ACCOUNTNAME/" $CONFIG_FILE
-sed -i "s/STORAGE_ACCOUNTKEY/${STORAGE_ACCOUNTKEY//\//\\/}/" $CONFIG_FILE
+
+if [ -f $CONFIG_SRC ]
+then
+    cp $CONFIG_SRC $CONFIG_DEST
+else
+    if [ ! -z "$CONFIG_URL" ]
+    then
+        echo no CONFIG_FILE provided and CONFIG_URL found
+        wget "$CONFIG_URL" -O "$CONFIG_DEST"
+    else
+        echo no CONFIG_FILE and no CONFIG_URL, using default m2ee.yaml
+        exit 2
+    fi
+fi
+
+sed -i "s/DATABASETYPE/$DATABASETYPE/" $CONFIG_DEST
+sed -i "s/DATABASEHOSTNAME/$DATABASEHOSTNAME/" $CONFIG_DEST
+sed -i "s/DATABASE_DB_NAME/$DATABASE_DB_NAME/" $CONFIG_DEST
+sed -i "s/DATABASEUSERNAME/$DATABASEUSERNAME/" $CONFIG_DEST
+sed -i "s/DATABASEPASSWORD/$DATABASEPASSWORD/" $CONFIG_DEST
+sed -i "s/STORAGE_CONTAINER/$STORAGE_CONTAINER/" $CONFIG_DEST
+sed -i "s/STORAGE_ACCOUNTNAME/$STORAGE_ACCOUNTNAME/" $CONFIG_DEST
+sed -i "s/STORAGE_ACCOUNTKEY/${STORAGE_ACCOUNTKEY//\//\\/}/" $CONFIG_DEST
 
 m2ee --yolo unpack application.mda
 m2ee download_runtime

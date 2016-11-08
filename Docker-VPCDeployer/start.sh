@@ -1,15 +1,11 @@
 #!/bin/bash
 
-set -ex
+set -eu
 
-PACKAGE_PATH=/srv/mendix/data/model-upload
-PACKAGE_FILE=$PACKAGE_PATH/application.mda
 CONFIG_FILE=/srv/mendix/.m2ee/m2ee.yaml
 
 APP_PING_PORT=9000
 APP_PING_PERIOD=60
-
-wget "$VPC_PACKAGE_URL" -O "$PACKAGE_FILE"
 
 sed -i "s/VPC_DB_TYPE/$VPC_DB_TYPE/" $CONFIG_FILE
 sed -i "s/VPC_DB_HOSTNAME/$VPC_DB_HOSTNAME/" $CONFIG_FILE

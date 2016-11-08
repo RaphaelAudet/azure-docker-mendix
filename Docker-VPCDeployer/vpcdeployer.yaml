@@ -28,4 +28,8 @@ mxruntime:
  DatabaseUserName: VPC_DB_USERNAME
  DatabasePassword: VPC_DB_PASSWORD
  MicroflowConstants:
-  VPCDeployer.AppModel_Shared_Folder: "/opt/mendix"
+  VPCDeployer.AppConfig_Destination: "/opt/mendix/dev"
+  VPCDeployer.AppConfig_File_Name: "m2ee.yaml"
+  VPCDeployer.AppModel_Destination: "/opt/mendix/dev"
+  VPCDeployer.AppModel_File_Name: "application.mda"
+  VPCDeployer.Log_Node: "Log_Node"
