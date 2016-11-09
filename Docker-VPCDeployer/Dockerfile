@@ -16,13 +16,14 @@ RUN cd /srv/mendix/data && mkdir database files model-upload log tmp
 COPY vpcdeployer.mda /srv/mendix/data/model-upload/application.mda
 COPY vpcdeployer.yaml /srv/mendix/.m2ee/m2ee.yaml
 COPY m2ee.experimental /usr/bin/m2ee
-COPY app-security.policy /srv/mendix/
+COPY vpc_deployer.policy /srv/mendix/vpc_deployer.policy
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
 RUN mkdir -p /opt/mendix/dev /opt/mendix/test /opt/mendix/prod
 
 RUN chown -R mendix:mendix /srv/mendix
+RUN chown mendix:mendix /var/run/docker.sock
 
 ENV MXDATA /srv/mendix/data
 
