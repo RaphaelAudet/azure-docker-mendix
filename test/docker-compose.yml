@@ -40,7 +40,7 @@ vpcdeployer:
         - ./shared_volumes/dev:/opt/mendix/dev
         - ./shared_volumes/test:/opt/mendix/test
         - ./shared_volumes/prod:/opt/mendix/prod
-        - /var/run/docker.sock:/var/run/docker.sock
+        - /var/run/docker.sock:/docker.sock
     ports:
         - "9000"
     links:

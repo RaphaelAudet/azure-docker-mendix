@@ -23,7 +23,8 @@ RUN chmod +x /start.sh
 RUN mkdir -p /opt/mendix/dev /opt/mendix/test /opt/mendix/prod
 
 RUN chown -R mendix:mendix /srv/mendix
-RUN chown mendix:mendix /var/run/docker.sock
+RUN touch /docker.sock
+RUN chown mendix:mendix /docker.sock
 
 ENV MXDATA /srv/mendix/data
 
