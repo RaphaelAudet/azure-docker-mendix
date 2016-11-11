@@ -1,24 +1,24 @@
 mxnode:
- mxjar_repo: [/srv/mendix/runtimes/]
+ mxjar_repo: [/root/runtimes/]
 m2ee:
  app_name: Mendix Project
- app_base: /srv/mendix
+ app_base: /root
  admin_port: 9001
  admin_pass: mendix!
  runtime_port: 9000
  runtime_listen_addresses: "::"
  javaopts: [
    "-Dfile.encoding=UTF-8", "-XX:MaxPermSize=128M", "-Xmx512M", "-Xms512M",
-   "-Djava.io.tmpdir=/srv/mendix/data/tmp",
-   "-Dcom.mendix.policy.file=/srv/mendix/vpc_deployer.policy"
+   "-Djava.io.tmpdir=/root/data/tmp",
+   "-Dcom.mendix.policy.file=/root/vpc_deployer.policy"
  ]
- logfile: /srv/mendix/data/log/m2ee.log
+ logfile: /root/data/log/m2ee.log
 logging:
  - # example of file logging by the platform itself
    name: FileSubscriber
    type: file
    autosubscribe: INFO
-   filename: /srv/mendix/data/log/app.log
+   filename: /root/data/log/app.log
    max_size: 10485760 # bytes(!!)
    max_rotation: 7
 mxruntime:
@@ -28,10 +28,12 @@ mxruntime:
  DatabaseUserName: VPC_DB_USERNAME
  DatabasePassword: VPC_DB_PASSWORD
  MicroflowConstants:
-  VPCDeployer.AppModel_Shared_Folder: "/opt/mendix"
   VPCDeployer.AppConfig_Destination: "/opt/mendix/dev"
   VPCDeployer.AppConfig_File_Name: "m2ee.yaml"
   VPCDeployer.AppModel_Destination: "/opt/mendix/dev"
+  VPCDeployer.AppModel_Shared_Folder: "/opt/mendix/dev"
   VPCDeployer.AppModel_File_Name: "application.mda"
   VPCDeployer.Log_Node: "VPC_Deployer"
+  DockerConnectors.Log_Node: "Docker Connectors"
   DockerConnectors.Docker_Socket: "/docker.sock"
+  VPCDeployer.AppContainer_Name: "compose_mendixapp_1"

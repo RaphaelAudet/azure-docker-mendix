@@ -26,6 +26,7 @@ mendixapp:
         - "8000"
     links:
         - db
+    container_name: compose_mendixapp_1
 
 vpcdeployer:
     image: mendix/vpcdeployer

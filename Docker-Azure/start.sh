@@ -51,7 +51,9 @@ sed -i "s/STORAGE_ACCOUNTNAME/$STORAGE_ACCOUNTNAME/" $CONFIG_DEST
 sed -i "s/STORAGE_ACCOUNTKEY/${STORAGE_ACCOUNTKEY//\//\\/}/" $CONFIG_DEST
 
 m2ee --yolo unpack application.mda
-m2ee download_runtime
+echo "Download runtime started"
+m2ee download_runtime >/dev/null 2>&1
+echo "Download runtime complete"
 m2ee --yolo start
 m2ee --yolo create_admin_user $ADMIN_PASSWORD
 

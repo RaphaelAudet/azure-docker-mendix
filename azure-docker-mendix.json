@@ -268,6 +268,7 @@
                         "PACKAGE_URL": "[parameters('appModelUrl')]",
                         "CONFIG_URL": "[parameters('appConfigUrl')]",
                         "DATABASETYPE": "SQLSERVER",
+                        "DATABASEHOSTNAME": "[concat(reference(resourceId('Microsoft.SQL/servers/', variables('sqlServerName'))).fullyQualifiedDomainName,':1433')]",
                         "DATABASE_DB_NAME": "[variables('databaseName')]",
                         "DATABASEUSERNAME": "[parameters('databaseUsername')]",
                         "DATABASEPASSWORD": "[parameters('databasePassword')]",
@@ -304,6 +305,8 @@
                             "environment": [
                                 "PACKAGE_URL",
                                 "CONFIG_URL",
+                                "DATABASETYPE",
+                                "DATABASEHOSTNAME",
                                 "DATABASE_DB_NAME",
                                 "DATABASEUSERNAME",
                                 "DATABASEPASSWORD",
@@ -339,7 +342,8 @@
                             "volumes": [
                                 "./opt/mendix/dev:/opt/mendix/dev",
                                 "./opt/mendix/test:/opt/mendix/test",
-                                "./opt/mendix/prod:/opt/mendix/prod"
+                                "./opt/mendix/prod:/opt/mendix/prod",
+                                "/var/run/docker.sock:/docker.sock"
                             ]
                         },
                         "deployerdb": {
@@ -355,9 +359,22 @@
         }
     ],
     "outputs": {
-        "dnsEndpoint": {
+        "Virtual Machine Endpoint": {
             "type": "string",
-            "value": "[reference(concat(variables('hostname'), '-pip'), '2016-01-01').dnsSettings.fqdn]"
+            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', concat(variables('hostname'), '-pip'))).dnsSettings.fqdn]"
+        },
+        "sql endpoint":{
+            "type": "string",
+            "value": "[concat(reference(resourceId('Microsoft.SQL/servers/', variables('sqlServerName'))).fullyQualifiedDomainName,':1433')]"
+        },
+        "VPC deployer Endpoint": {
+            "type": "string",
+            "value": "[concat('https://',reference(resourceId('Microsoft.Network/publicIPAddresses', concat(variables('hostname'), '-pip'))).dnsSettings.fqdn, '/vpcdeployer/')]"
+        },
+        "VPC deployer Password": {
+            "type": "string",
+            "value": "[variables('vpcdDbPassword')]"
+
         }
 
     }

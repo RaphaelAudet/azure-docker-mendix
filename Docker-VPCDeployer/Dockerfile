@@ -8,28 +8,23 @@ MAINTAINER Mendix Smart connectors <smartconnectors@mendix.com>
 RUN apt-key adv --fetch-keys http://packages.mendix.com/mendix-debian-archive-key.asc
 RUN echo "deb http://packages.mendix.com/platform/debian/ jessie main" > /etc/apt/sources.list.d/mendix.list
 
-RUN apt-get update && apt-get install -y --no-install-recommends m2ee-tools openjdk-8-jre-headless postgresql-client procps vim-nox curl netcat && apt-get clean
+RUN apt-get update && apt-get install -y --no-install-recommends m2ee-tools openjdk-8-jre-headless postgresql-client procps netcat && apt-get clean
 
-RUN useradd -m mendix -b /srv && cd /srv/mendix && mkdir .m2ee data model runtimes web
-RUN cd /srv/mendix/data && mkdir database files model-upload log tmp
+RUN cd /root && mkdir .m2ee data model runtimes web && cd data && mkdir database files model-upload log tmp
 
-COPY vpcdeployer.mda /srv/mendix/data/model-upload/application.mda
-COPY vpcdeployer.yaml /srv/mendix/.m2ee/m2ee.yaml
+COPY vpcdeployer.mda /root/data/model-upload/application.mda
+COPY vpcdeployer.yaml /root/.m2ee/m2ee.yaml
 COPY m2ee.experimental /usr/bin/m2ee
-COPY vpc_deployer.policy /srv/mendix/vpc_deployer.policy
+COPY vpc_deployer.policy /root/vpc_deployer.policy
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
 RUN mkdir -p /opt/mendix/dev /opt/mendix/test /opt/mendix/prod
 
-RUN chown -R mendix:mendix /srv/mendix
 RUN touch /docker.sock
-RUN chown mendix:mendix /docker.sock
 
-ENV MXDATA /srv/mendix/data
+ENV MXDATA /root/data
 
 EXPOSE 9000
 
 ENTRYPOINT ["/start.sh"]
-
-USER mendix
