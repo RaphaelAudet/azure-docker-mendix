@@ -18,6 +18,7 @@ mendixapp:
         - DATABASEUSERNAME=mendix
         - DATABASEPASSWORD=mendix
         - ADMIN_PASSWORD=dwjkhwdfkjh1@
+        - DEBUG=true
     volumes:
         - ./shared_volumes:/opt/mendix
     ports:
@@ -35,6 +36,7 @@ vpcdeployer:
         - VPC_DB_USERNAME=mendix
         - VPC_DB_PASSWORD=mendix
         - VPC_ADMIN_PASSWORD=kfjfkjwkF3@
+        - DEBUG=true
     volumes:
         - ./shared_volumes:/opt/mendix
         - /var/run/docker.sock:/docker.sock

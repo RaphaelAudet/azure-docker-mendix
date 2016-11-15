@@ -62,3 +62,7 @@ do
     echo app is running, sleeping for $APP_PING_PERIOD
     sleep $APP_PING_PERIOD
 done
+
+if [ -z "$DEBUG" ]; then
+  while true; do echo App is down, container is up, sleeping 30 && sleep 30; done
+fi
