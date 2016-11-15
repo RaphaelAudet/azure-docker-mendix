@@ -2,8 +2,8 @@
 
 set -e
 
-if [ -z $PACKAGE_SRC ]; then PACKAGE_SRC=/opt/mendix/prod/application.mda; fi
-if [ -z $CONFIG_SRC ]; then CONFIG_SRC=/opt/mendix/prod/m2ee.yaml; fi
+if [ -z $PACKAGE_SRC ]; then PACKAGE_SRC=/opt/mendix/application.mda; fi
+if [ -z $CONFIG_SRC ]; then CONFIG_SRC=/opt/mendix/m2ee.yaml; fi
 
 PACKAGE_DEST=/srv/mendix/data/model-upload/application.mda
 CONFIG_DEST=/srv/mendix/.m2ee/m2ee.yaml

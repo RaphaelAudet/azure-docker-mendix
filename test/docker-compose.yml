@@ -10,8 +10,8 @@ web:
 mendixapp:
     image: mendix/mendix_azure:custom_m2ee
     environment:
-        - PACKAGE_SRC=/opt/mendix/dev/application.mda
-        - CONFIG_SRC=/opt/mendix/dev/m2ee.test.yaml
+        - PACKAGE_SRC=/opt/mendix/application.mda
+        - CONFIG_SRC=/opt/mendix/m2ee.test.yaml
         - DATABASETYPE=PostgreSQL
         - DATABASEHOSTNAME=db:5432
         - DATABASE_DB_NAME=mendix
@@ -19,9 +19,7 @@ mendixapp:
         - DATABASEPASSWORD=mendix
         - ADMIN_PASSWORD=dwjkhwdfkjh1@
     volumes:
-        - ./shared_volumes/dev:/opt/mendix/dev
-        - ./shared_volumes/test:/opt/mendix/test
-        - ./shared_volumes/prod:/opt/mendix/prod
+        - ./shared_volumes:/opt/mendix
     ports:
         - "8000"
     links:
@@ -38,9 +36,7 @@ vpcdeployer:
         - VPC_DB_PASSWORD=mendix
         - VPC_ADMIN_PASSWORD=kfjfkjwkF3@
     volumes:
-        - ./shared_volumes/dev:/opt/mendix/dev
-        - ./shared_volumes/test:/opt/mendix/test
-        - ./shared_volumes/prod:/opt/mendix/prod
+        - ./shared_volumes:/opt/mendix
         - /var/run/docker.sock:/docker.sock
     ports:
         - "9000"
@@ -60,3 +56,5 @@ deployerdb:
     environment:
         - POSTGRES_USER=mendix
         - POSTGRES_PASSWORD=mendix
+    ports:
+        - "5432"

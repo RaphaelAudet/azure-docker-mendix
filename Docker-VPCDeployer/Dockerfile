@@ -19,7 +19,7 @@ COPY vpc_deployer.policy /root/vpc_deployer.policy
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
-RUN mkdir -p /opt/mendix/dev /opt/mendix/test /opt/mendix/prod
+RUN mkdir -p /opt/mendix
 
 RUN touch /docker.sock
 

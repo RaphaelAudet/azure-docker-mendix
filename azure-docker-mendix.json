@@ -282,7 +282,8 @@
                         "VPC_DB_PASSWORD": "[variables('vpcdDbPassword')]",
                         "VPC_ADMIN_PASSWORD": "[parameters('mxAdminPassword')]",
                         "POSTGRES_USER": "[variables('vpcdDbUsername')]",
-                        "POSTGRES_PASSWORD": "[variables('vpcdDbPassword')]"
+                        "POSTGRES_PASSWORD": "[variables('vpcdDbPassword')]",
+                        "POSTGRES_DB": "[variables('vpcdDbdatabase')]"
                     }
                 },
                 "settings": {
@@ -318,9 +319,7 @@
                                 "8000"
                             ],
                             "volumes": [
-                                "./opt/mendix/dev:/opt/mendix/dev",
-                                "./opt/mendix/test:/opt/mendix/test",
-                                "./opt/mendix/prod:/opt/mendix/prod"
+                                "./opt/mendix:/opt/mendix"
                             ]
                         },
                         "vpcdeployer": {
@@ -340,9 +339,7 @@
                                 "deployerdb"
                             ],
                             "volumes": [
-                                "./opt/mendix/dev:/opt/mendix/dev",
-                                "./opt/mendix/test:/opt/mendix/test",
-                                "./opt/mendix/prod:/opt/mendix/prod",
+                                "./opt/mendix:/opt/mendix",
                                 "/var/run/docker.sock:/docker.sock"
                             ]
                         },
@@ -350,7 +347,8 @@
                             "image": "postgres",
                             "environment": [
                                 "POSTGRES_USER",
-                                "POSTGRES_PASSWORD"
+                                "POSTGRES_PASSWORD",
+                                "POSTGRES_DB"
                             ]
                         }
                     }

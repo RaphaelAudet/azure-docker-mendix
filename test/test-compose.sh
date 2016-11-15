@@ -25,8 +25,8 @@ function prepare_tests() {
     if [ -f shared_volumes ]; then
         rm -rf shared_volumes;fi
     mkdir -p shared_volumes/dev
-    wget https://cdn.mendix.com/sample/sample-690.mda  -O shared_volumes/dev/application.mda
-    wget https://cdn.mendix.com/sample/m2ee.compose.test.yaml  -O  shared_volumes/dev//m2ee.test.yaml
+    wget https://cdn.mendix.com/sample/sample-690.mda  -O shared_volumes/application.mda
+    wget https://cdn.mendix.com/sample/m2ee.compose.test.yaml  -O  shared_volumes//m2ee.test.yaml
 }
 
 # test builds
@@ -48,9 +48,9 @@ test_command "curl mendix app" "curl -vs -k https://127.0.0.1/  2>&1 | grep mxcl
 # test vpcdeployer
 test_command "curl vpcdeployer" "curl -vs -k https://127.0.0.1/vpcdeployer/  2>&1 | grep mxclient > /dev/null  2>&1"
 
-docker-compose down
+# docker-compose down
 
-rm -rf shared_volumes
+# rm -rf shared_volumes
 
 echo "===== TESTS complete"
 
