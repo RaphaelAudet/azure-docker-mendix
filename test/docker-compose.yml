@@ -44,6 +44,8 @@ vpcdeployer:
         - /var/run/docker.sock:/docker.sock
     ports:
         - "9000"
+        - "9001"
+        - "8000"
     links:
         - deployerdb
 
