@@ -9,8 +9,8 @@ m2ee:
  runtime_listen_addresses: "::"
  javaopts: [
    "-Dfile.encoding=UTF-8", "-Xmx2048M", "-Xms2048M",
-   "-Djava.io.tmpdir=/srv/mendix/data/tmp",
-   "-Dcom.mendix.policy.file=/srv/mendix/vpc_deployer.policy",
+   "-Djava.io.tmpdir=/root/data/tmp",
+   "-Dcom.mendix.policy.file=/root/vpc_deployer.policy",
    "-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
  ]
  logfile: /root/data/log/m2ee.log
@@ -35,6 +35,6 @@ mxruntime:
   VPCDeployer.AppModel_Shared_Folder: "/opt/mendix"
   VPCDeployer.AppModel_File_Name: "application.mda"
   VPCDeployer.Log_Node: "VPC_Deployer"
-  DockerConnectors.Docker_Socket: "/docker.sock"
+  DockerConnectors.Docker_Socket: "/var/run/docker.sock"
   DockerConnectors.Log_Node: "Docker Connectors"
   VPCDeployer.AppContainer_Name: "compose_mendixapp_1"

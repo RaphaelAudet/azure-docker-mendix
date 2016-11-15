@@ -39,7 +39,7 @@ vpcdeployer:
         - DEBUG=true
     volumes:
         - ./shared_volumes:/opt/mendix
-        - /var/run/docker.sock:/docker.sock
+        - /var/run/docker.sock:/var/run/docker.sock
     ports:
         - "9000"
         - "9001"

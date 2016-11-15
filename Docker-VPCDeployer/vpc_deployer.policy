@@ -19,7 +19,7 @@ ALLOW {
   (java.io.FilePermission "java:fonts" "read")
   (java.io.FilePermission "/opt/mendix/application.mda"  "read,write")
   (java.io.FilePermission "/opt/mendix/m2ee.yaml"  "read,write")
-  (java.io.FilePermission "/docker.sock"  "read,write")
+  (java.io.FilePermission "/var/run/docker.sock"  "read,write")
   (java.io.FilePermission "/root/data/tmp/-" "read,write,delete,execute")
   (java.io.FilePermission "/root/model/resources/-"  "read")
   (java.io.FilePermission "/root/model/lib/-"  "read")
