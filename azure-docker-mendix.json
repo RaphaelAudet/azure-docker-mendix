@@ -22,12 +22,6 @@
                     "description": "SQL Server Administrator password"
                 }
         },
-        "databaseName": {
-            "type" : "string",
-                "metadata": {
-                    "description": "Application Database Name"
-                }
-        },
         "hostAdminUsername": {
             "type" : "string",
                 "metadata": {
@@ -52,7 +46,7 @@
                     "description": "URL to download your Mendix configuration file (m2ee.yaml)"
                 }
         },
-        "adminPassword": {
+        "mxAdminPassword": {
             "type" : "securestring",
                 "metadata": {
                     "description": "Mendix Application Administrative account (MxAdmin) password"
@@ -60,12 +54,16 @@
         }
     },
     "variables": {
+        "databaseName": "[uniqueString(resourceGroup().id)]",
         "storageAccountName": "[substring(concat('mx', parameters('environment'), 'st', uniqueString(resourceGroup().name)), 0, 20)]",
         "sqlServerName": "[concat('mx', '-', parameters('environment'), '-', substring(uniqueString(resourceGroup().name), 0, 10), '-', 'sql')]",
         "hostname": "[concat('mx', '-', parameters('environment'), '-', substring(uniqueString(resourceGroup().name), 0, 10), '-', 'vm')]",
         "hostStorage": "[concat(uniqueString(resourceGroup().name), 'vmst')]",
         "hostVirtualNetwork": "[concat(variables('hostname'), '-vnet')]",
-        "databaseNameResource": "[concat(variables('sqlServerName'), '/', parameters('databaseName'))]"
+        "databaseNameResource": "[concat(variables('sqlServerName'), '/', variables('databaseName'))]",
+        "vpcdDbUsername": "mendix",
+        "vpcdDbPassword": "[uniqueString(resourceGroup().id)]",
+        "vpcdDbdatabase": "[variables('vpcdDbUsername')]"
     },
     "resources": [
         {
@@ -114,7 +112,7 @@
             "apiVersion": "2014-04-01-preview",
             "location": "[resourceGroup().location]",
             "tags": {
-                "displayName": "parameters('databaseName')"
+                "displayName": "variables('databaseName')"
             },
             "dependsOn": [
                 "[variables('sqlServerName')]"
@@ -268,13 +266,24 @@
                 "protectedSettings": {
                     "environment": {
                         "PACKAGE_URL": "[parameters('appModelUrl')]",
-                        "CONFIG_URL": "https://s3-eu-west-1.amazonaws.com/samplemendix/m2ee.azure.sample3.yaml",
-                        "DATABASE_DB_NAME": "[parameters('databaseName')]",
+                        "CONFIG_URL": "[parameters('appConfigUrl')]",
+                        "DATABASETYPE": "SQLSERVER",
+                        "DATABASEHOSTNAME": "[concat(reference(resourceId('Microsoft.SQL/servers/', variables('sqlServerName'))).fullyQualifiedDomainName,':1433')]",
+                        "DATABASE_DB_NAME": "[variables('databaseName')]",
                         "DATABASEUSERNAME": "[parameters('databaseUsername')]",
                         "DATABASEPASSWORD": "[parameters('databasePassword')]",
                         "STORAGE_CONTAINER": "mendix-container",
                         "STORAGE_ACCOUNTNAME": "[variables('storageAccountName')]",
-                        "ADMIN_PASSWORD": "[parameters('adminPassword')]"
+                        "ADMIN_PASSWORD": "[parameters('mxAdminPassword')]",
+                        "VPC_DB_TYPE": "PostgreSQL",
+                        "VPC_DB_HOSTNAME": "deployerdb:5432",
+                        "VPC_DB_DATABASE": "[variables('vpcdDbdatabase')]",
+                        "VPC_DB_USERNAME": "[variables('vpcdDbUsername')]",
+                        "VPC_DB_PASSWORD": "[variables('vpcdDbPassword')]",
+                        "VPC_ADMIN_PASSWORD": "[parameters('mxAdminPassword')]",
+                        "POSTGRES_USER": "[variables('vpcdDbUsername')]",
+                        "POSTGRES_PASSWORD": "[variables('vpcdDbPassword')]",
+                        "POSTGRES_DB": "[variables('vpcdDbdatabase')]"
                     }
                 },
                 "settings": {
@@ -287,7 +296,8 @@
                             ]
                             ,
                             "links": [
-                                "mendixapp"
+                                "mendixapp",
+                                "vpcdeployer"
                             ]
 
                         },
@@ -296,6 +306,8 @@
                             "environment": [
                                 "PACKAGE_URL",
                                 "CONFIG_URL",
+                                "DATABASETYPE",
+                                "DATABASEHOSTNAME",
                                 "DATABASE_DB_NAME",
                                 "DATABASEUSERNAME",
                                 "DATABASEPASSWORD",
@@ -305,6 +317,38 @@
                             ],
                             "ports": [
                                 "8000"
+                            ],
+                            "volumes": [
+                                "./opt/mendix:/opt/mendix"
+                            ]
+                        },
+                        "vpcdeployer": {
+                            "image": "mendix/vpcdeployer",
+                            "environment": [
+                                "VPC_DB_TYPE",
+                                "VPC_DB_HOSTNAME",
+                                "VPC_DB_DATABASE",
+                                "VPC_DB_USERNAME",
+                                "VPC_DB_PASSWORD",
+                                "VPC_ADMIN_PASSWORD"
+                            ],
+                            "ports": [
+                                "9000"
+                            ],
+                            "links": [
+                                "deployerdb"
+                            ],
+                            "volumes": [
+                                "./opt/mendix:/opt/mendix",
+                                "/var/run/docker.sock:/docker.sock"
+                            ]
+                        },
+                        "deployerdb": {
+                            "image": "postgres",
+                            "environment": [
+                                "POSTGRES_USER",
+                                "POSTGRES_PASSWORD",
+                                "POSTGRES_DB"
                             ]
                         }
                     }
@@ -313,9 +357,22 @@
         }
     ],
     "outputs": {
-        "customData": {
+        "Virtual Machine Endpoint": {
             "type": "string",
-            "value": "[concat(variables('hostname'), '-pip')]"
+            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', concat(variables('hostname'), '-pip'))).dnsSettings.fqdn]"
+        },
+        "sql endpoint":{
+            "type": "string",
+            "value": "[concat(reference(resourceId('Microsoft.SQL/servers/', variables('sqlServerName'))).fullyQualifiedDomainName,':1433')]"
+        },
+        "VPC deployer Endpoint": {
+            "type": "string",
+            "value": "[concat('https://',reference(resourceId('Microsoft.Network/publicIPAddresses', concat(variables('hostname'), '-pip'))).dnsSettings.fqdn, '/vpcdeployer/')]"
+        },
+        "VPC deployer Password": {
+            "type": "string",
+            "value": "[variables('vpcdDbPassword')]"
+
         }
 
     }

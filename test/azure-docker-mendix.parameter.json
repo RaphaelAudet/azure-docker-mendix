@@ -1,0 +1,30 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "value" : "dev"
+        },
+        "databaseUsername": {
+            "value" : "MxAdmin"
+        },
+        "databasePassword": {
+            "value" : "Password1!"
+        },
+        "hostAdminUsername": {
+            "value" : "MxAdmin"
+        },
+        "hostAdminPassword": {
+            "value" : "Password1!"
+        },
+        "appModelUrl": {
+            "value" : "https://cdn.mendix.com/sample/sample-690.mda"
+        },
+        "appConfigUrl": {
+            "value": "https://cdn.mendix.com/sample/m2ee.azure-template.yaml"
+        },
+        "mxAdminPassword": {
+            "value": "pAssw0rd!3"
+        }
+    }
+}
