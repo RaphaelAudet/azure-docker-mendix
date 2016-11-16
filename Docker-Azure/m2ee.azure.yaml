@@ -8,7 +8,7 @@ m2ee:
  runtime_port: 8000
  runtime_listen_addresses: "::"
  javaopts: [
-   "-Dfile.encoding=UTF-8", "-XX:MaxPermSize=128M", "-Xmx512M", "-Xms512M",
+   "-Dfile.encoding=UTF-8", "-Xmx512M", "-Xms512M",
    "-Djava.io.tmpdir=/srv/mendix/data/tmp",
  ]
  logfile: /srv/mendix/data/log/m2ee.log

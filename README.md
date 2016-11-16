@@ -16,8 +16,7 @@ This allocates a new storage account and Azure SQL database for your application
 ## Requirements:
 
 * Microsoft Azure Account (you need privileges to run ARM templates and a valid subscription)
-* optional: Mendix 6.9 application package MDA available throught a wget download
-
+* Mendix 6.9 application package MDA available throught a wget download
 
 *  *Optional*: If you wish to customize your Mendix application configuration (for application constants...) you should use the template *m2ee.azure.yaml* file and provide the location of your configuration
 
