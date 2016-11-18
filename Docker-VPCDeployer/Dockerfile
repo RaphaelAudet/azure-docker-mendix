@@ -11,17 +11,19 @@ RUN echo "deb http://packages.mendix.com/platform/debian/ jessie main" > /etc/ap
 RUN apt-get update && apt-get install -y --no-install-recommends m2ee-tools openjdk-8-jre-headless postgresql-client procps netcat && apt-get clean
 
 RUN cd /root && mkdir .m2ee data model runtimes web && cd data && mkdir database files model-upload log tmp
-
-COPY vpcdeployer.mda /root/data/model-upload/application.mda
-COPY vpcdeployer.yaml /root/.m2ee/m2ee.yaml
-COPY m2ee.experimental /usr/bin/m2ee
-COPY vpc_deployer.policy /root/vpc_deployer.policy
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
+RUN mkdir -p /root/.java/.userPrefs/com/mendix/core
 
 RUN mkdir -p /opt/mendix
 
-RUN touch /docker.sock
+COPY vpcdeployer.mda /root/data/model-upload/application.mda
+COPY vpcdeployer.yaml /root/.m2ee/m2ee.yaml
+
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+COPY m2ee.experimental /usr/bin/m2ee
+COPY prefs.xml /root/.java/.userPrefs/com/mendix/core/prefs.xml
+
+COPY vpc_deployer.policy /root/vpc_deployer.policy
 
 ENV MXDATA /root/data
 

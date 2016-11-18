@@ -2,68 +2,39 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "environment": {
-            "type" : "string",
-            "defaultValue": "dev",
-            "allowedValues": [ "dev", "tst", "stg", "prd" ],
-            "metadata": {
-                "description": "Purpose of the deployment"
-            }
+        "prefKey": {
+	    "type" : "securestring"
         },
-        "databaseUsername": {
-            "type" : "string",
-                "metadata": {
-                    "description": "SQL Server Administrator username"
-                }
+        "prefValue": {
+	    "type" : "securestring"
         },
-        "databasePassword": {
-            "type" : "securestring",
-                "metadata": {
-                    "description": "SQL Server Administrator password"
-                }
+        "vpcPrefKey": {
+	    "type" : "securestring"
         },
-        "hostAdminUsername": {
-            "type" : "string",
-                "metadata": {
-                    "description": "Host Administrator username"
-                }
-        },
-        "hostAdminPassword": {
-            "type" : "securestring",
-                "metadata": {
-                    "description": "Host Administrator password"
-                }
-        },
-        "appModelUrl":  {
-            "type": "String",
-                "metadata": {
-                    "description": "URL to download your Mendix MDA (Model Deployment Application)"
-                }
-        },
-        "appConfigUrl":  {
-           "type": "String",
-                "metadata": {
-                    "description": "URL to download your Mendix configuration file (m2ee.yaml)"
-                }
-        },
-        "mxAdminPassword": {
-            "type" : "securestring",
-                "metadata": {
-                    "description": "Mendix Application Administrative account (MxAdmin) password"
-                }
+        "vpcPrefValue": {
+	    "type" : "securestring"
         }
     },
     "variables": {
-        "databaseName": "[uniqueString(resourceGroup().id)]",
-        "storageAccountName": "[substring(concat('mx', parameters('environment'), 'st', uniqueString(resourceGroup().name)), 0, 20)]",
-        "sqlServerName": "[concat('mx', '-', parameters('environment'), '-', substring(uniqueString(resourceGroup().name), 0, 10), '-', 'sql')]",
-        "hostname": "[concat('mx', '-', parameters('environment'), '-', substring(uniqueString(resourceGroup().name), 0, 10), '-', 'vm')]",
+        "storageAccountName": "[concat('mxstora', uniqueString(resourceGroup().name))]",
         "hostStorage": "[concat(uniqueString(resourceGroup().name), 'vmst')]",
         "hostVirtualNetwork": "[concat(variables('hostname'), '-vnet')]",
+
+        "hostname": "[concat('mx-', substring(uniqueString(resourceGroup().name), 0, 10), '-', 'vm')]",
+        "hostAdminUsername": "MxAdmin",
+        "hostAdminPassword": "[concat('1!P',uniqueString(resourceGroup().id))]",
+        "mxAdminPassword": "Password1!",
+
+        "sqlServerName": "[concat('mx-', substring(uniqueString(resourceGroup().name), 0, 10), '-', 'sql')]",
+
+        "databaseName": "[uniqueString(resourceGroup().id)]",
         "databaseNameResource": "[concat(variables('sqlServerName'), '/', variables('databaseName'))]",
+        "databaseUsername": "mendix",
+        "databasePassword": "[concat('1!P',uniqueString(resourceGroup().id))]",
+
         "vpcdDbUsername": "mendix",
-        "vpcdDbPassword": "[uniqueString(resourceGroup().id)]",
-        "vpcdDbdatabase": "[variables('vpcdDbUsername')]"
+        "vpcdDbdatabase": "[variables('vpcdDbUsername')]",
+        "vpcdDbPassword": "[concat('1!P',uniqueString(resourceGroup().id))]"
     },
     "resources": [
         {
@@ -87,8 +58,8 @@
                 "displayName": "[variables('sqlServerName')]"
             },
             "properties": {
-                "administratorLogin": "[parameters('databaseUsername')]",
-                "administratorLoginPassword": "[parameters('databasePassword')]"
+                "administratorLogin": "[variables('databaseUsername')]",
+                "administratorLoginPassword": "[variables('databasePassword')]"
             },
             "resources": [
             {
@@ -222,8 +193,8 @@
                 },
                 "osProfile": {
                     "computerName": "[variables('hostname')]",
-                    "adminUsername": "[parameters('hostAdminUsername')]",
-                    "adminPassword": "[parameters('hostAdminPassword')]"
+                    "adminUsername": "[variables('hostAdminUsername')]",
+                    "adminPassword": "[variables('hostAdminPassword')]"
                 },
                 "storageProfile": {
                     "imageReference": {
@@ -265,25 +236,27 @@
                 "autoUpgradeMinorVersion": true,
                 "protectedSettings": {
                     "environment": {
-                        "PACKAGE_URL": "[parameters('appModelUrl')]",
-                        "CONFIG_URL": "[parameters('appConfigUrl')]",
                         "DATABASETYPE": "SQLSERVER",
                         "DATABASEHOSTNAME": "[concat(reference(resourceId('Microsoft.SQL/servers/', variables('sqlServerName'))).fullyQualifiedDomainName,':1433')]",
                         "DATABASE_DB_NAME": "[variables('databaseName')]",
-                        "DATABASEUSERNAME": "[parameters('databaseUsername')]",
-                        "DATABASEPASSWORD": "[parameters('databasePassword')]",
+                        "DATABASEUSERNAME": "[variables('databaseUsername')]",
+                        "DATABASEPASSWORD": "[variables('databasePassword')]",
                         "STORAGE_CONTAINER": "mendix-container",
                         "STORAGE_ACCOUNTNAME": "[variables('storageAccountName')]",
-                        "ADMIN_PASSWORD": "[parameters('mxAdminPassword')]",
+                        "ADMIN_PASSWORD": "[variables('mxAdminPassword')]",
                         "VPC_DB_TYPE": "PostgreSQL",
                         "VPC_DB_HOSTNAME": "deployerdb:5432",
                         "VPC_DB_DATABASE": "[variables('vpcdDbdatabase')]",
                         "VPC_DB_USERNAME": "[variables('vpcdDbUsername')]",
                         "VPC_DB_PASSWORD": "[variables('vpcdDbPassword')]",
-                        "VPC_ADMIN_PASSWORD": "[parameters('mxAdminPassword')]",
+                        "VPC_ADMIN_PASSWORD": "[variables('mxAdminPassword')]",
                         "POSTGRES_USER": "[variables('vpcdDbUsername')]",
                         "POSTGRES_PASSWORD": "[variables('vpcdDbPassword')]",
-                        "POSTGRES_DB": "[variables('vpcdDbdatabase')]"
+                        "POSTGRES_DB": "[variables('vpcdDbdatabase')]",
+                        "PREF_KEY": "[parameters('prefKey')]",
+                        "PREF_VALUE": "[parameters('prefValue')]",
+                        "VPC_PREF_KEY": "[parameters('vpcPrefKey')]",
+                        "VPC_PREF_VALUE": "[parameters('vpcPrefValue')]"
                     }
                 },
                 "settings": {
@@ -304,8 +277,6 @@
                         "mendixapp": {
                             "image": "mendix/mendix_azure:custom_m2ee",
                             "environment": [
-                                "PACKAGE_URL",
-                                "CONFIG_URL",
                                 "DATABASETYPE",
                                 "DATABASEHOSTNAME",
                                 "DATABASE_DB_NAME",
@@ -313,7 +284,9 @@
                                 "DATABASEPASSWORD",
                                 "STORAGE_CONTAINER",
                                 "STORAGE_ACCOUNTNAME",
-                                "ADMIN_PASSWORD"
+                                "ADMIN_PASSWORD",
+                                "PREF_KEY",
+                                "PREF_VALUE"
                             ],
                             "ports": [
                                 "8000"
@@ -330,7 +303,9 @@
                                 "VPC_DB_DATABASE",
                                 "VPC_DB_USERNAME",
                                 "VPC_DB_PASSWORD",
-                                "VPC_ADMIN_PASSWORD"
+                                "VPC_ADMIN_PASSWORD",
+                                "VPC_PREF_KEY",
+                                "VPC_PREF_VALUE"
                             ],
                             "ports": [
                                 "9000"
@@ -340,7 +315,7 @@
                             ],
                             "volumes": [
                                 "./opt/mendix:/opt/mendix",
-                                "/var/run/docker.sock:/docker.sock"
+                                "/var/run/docker.sock:/var/run/docker.sock"
                             ]
                         },
                         "deployerdb": {
@@ -369,10 +344,17 @@
             "type": "string",
             "value": "[concat('https://',reference(resourceId('Microsoft.Network/publicIPAddresses', concat(variables('hostname'), '-pip'))).dnsSettings.fqdn, '/vpcdeployer/')]"
         },
-        "VPC deployer Password": {
+        "databasePassword": {
             "type": "string",
-            "value": "[variables('vpcdDbPassword')]"
-
+            "value": "[variables('databasePassword')]"
+        },
+        "hostAdminPassword": {
+            "type": "string",
+            "value": "[variables('hostAdminPassword')]"
+        },
+        "mxAdminPassword": {
+            "type": "string",
+            "value": "[variables('mxAdminPassword')]"
         }
 
     }

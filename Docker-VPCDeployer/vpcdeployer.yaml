@@ -10,7 +10,8 @@ m2ee:
  javaopts: [
    "-Dfile.encoding=UTF-8", "-Xmx2048M", "-Xms2048M",
    "-Djava.io.tmpdir=/root/data/tmp",
-   "-Dcom.mendix.policy.file=/root/vpc_deployer.policy"
+   "-Dcom.mendix.policy.file=/root/vpc_deployer.policy",
+   "-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
  ]
  logfile: /root/data/log/m2ee.log
 logging:
