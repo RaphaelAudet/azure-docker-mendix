@@ -2,43 +2,24 @@
 
 set -e
 
-if [ -z $PACKAGE_SRC ]; then PACKAGE_SRC=/opt/mendix/application.mda; fi
-if [ -z $CONFIG_SRC ]; then CONFIG_SRC=/opt/mendix/m2ee.yaml; fi
+PACKAGE_SRC=/opt/mendix/application.mda
+CONFIG_SRC=/opt/mendix/m2ee.yaml
 
-PACKAGE_DEST=/srv/mendix/data/model-upload/application.mda
-CONFIG_DEST=/srv/mendix/.m2ee/m2ee.yaml
+PACKAGE_DEST=/root/data/model-upload/application.mda
+CONFIG_DEST=/root/.m2ee/m2ee.yaml
+PREF_XML=/root/.java/.userPrefs/com/mendix/core/prefs.xml
 
 APP_PING_PORT=8000
 APP_PING_PERIOD=60
 
-ADMIN_PASSWORD=$ADMIN_PASSWORD
-
 if [ -f $PACKAGE_SRC ]
 then
     cp $PACKAGE_SRC $PACKAGE_DEST
-else
-    if [ ! -z "$PACKAGE_URL" ]
-    then
-        wget "$PACKAGE_URL" -O "$PACKAGE_DEST"
-    else
-        echo no PACKAGE_SRC and no PACKAGE_URL, exiting
-        exit 1
-    fi
 fi
-
 
 if [ -f $CONFIG_SRC ]
 then
     cp $CONFIG_SRC $CONFIG_DEST
-else
-    if [ ! -z "$CONFIG_URL" ]
-    then
-        echo no CONFIG_FILE provided and CONFIG_URL found
-        wget "$CONFIG_URL" -O "$CONFIG_DEST"
-    else
-        echo no CONFIG_FILE and no CONFIG_URL, using default m2ee.yaml
-        exit 2
-    fi
 fi
 
 sed -i "s/DATABASETYPE/$DATABASETYPE/" $CONFIG_DEST
@@ -49,6 +30,9 @@ sed -i "s/DATABASEPASSWORD/$DATABASEPASSWORD/" $CONFIG_DEST
 sed -i "s/STORAGE_CONTAINER/$STORAGE_CONTAINER/" $CONFIG_DEST
 sed -i "s/STORAGE_ACCOUNTNAME/$STORAGE_ACCOUNTNAME/" $CONFIG_DEST
 sed -i "s/STORAGE_ACCOUNTKEY/${STORAGE_ACCOUNTKEY//\//\\/}/" $CONFIG_DEST
+
+sed -i "s/PREF_KEY/$PREF_KEY/" $PREF_XML
+sed -i "s/PREF_VALUE/$PREF_VALUE/" $PREF_XML
 
 m2ee --yolo unpack application.mda
 echo "Download runtime started"
@@ -62,7 +46,3 @@ do
     echo app is running, sleeping for $APP_PING_PERIOD
     sleep $APP_PING_PERIOD
 done
-
-if [ -z "$DEBUG" ]; then
-  while true; do echo App is down, container is up, sleeping 30 && sleep 30; done
-fi

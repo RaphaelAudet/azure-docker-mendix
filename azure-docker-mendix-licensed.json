@@ -1,0 +1,361 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "prefKey": {
+	    "type" : "securestring"
+        },
+        "prefValue": {
+	    "type" : "securestring"
+        },
+        "vpcPrefKey": {
+	    "type" : "securestring"
+        },
+        "vpcPrefValue": {
+	    "type" : "securestring"
+        }
+    },
+    "variables": {
+        "storageAccountName": "[concat('mxstora', uniqueString(resourceGroup().name))]",
+        "hostStorage": "[concat(uniqueString(resourceGroup().name), 'vmst')]",
+        "hostVirtualNetwork": "[concat(variables('hostname'), '-vnet')]",
+
+        "hostname": "[concat('mx-', substring(uniqueString(resourceGroup().name), 0, 10), '-', 'vm')]",
+        "hostAdminUsername": "MxAdmin",
+        "hostAdminPassword": "[concat('1!P',uniqueString(resourceGroup().id))]",
+        "mxAdminPassword": "Password1!",
+
+        "sqlServerName": "[concat('mx-', substring(uniqueString(resourceGroup().name), 0, 10), '-', 'sql')]",
+
+        "databaseName": "[uniqueString(resourceGroup().id)]",
+        "databaseNameResource": "[concat(variables('sqlServerName'), '/', variables('databaseName'))]",
+        "databaseUsername": "mendix",
+        "databasePassword": "[concat('1!P',uniqueString(resourceGroup().id))]",
+
+        "vpcdDbUsername": "mendix",
+        "vpcdDbdatabase": "[variables('vpcdDbUsername')]",
+        "vpcdDbPassword": "[concat(X2!',uniqueString(resourceGroup().id))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('storageAccountName')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[variables('storageAccountName')]"
+            },
+            "properties": {
+                "accountType": "Standard_LRS"
+            }
+        },
+        {
+            "apiVersion": "2014-04-01-preview",
+            "name": "[variables('sqlServerName')]",
+            "type": "Microsoft.Sql/servers",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[variables('sqlServerName')]"
+            },
+            "properties": {
+                "administratorLogin": "[variables('databaseUsername')]",
+                "administratorLoginPassword": "[variables('databasePassword')]"
+            },
+            "resources": [
+            {
+                "apiVersion": "2014-04-01-preview",
+                "dependsOn": [
+                    "[concat('Microsoft.Sql/servers/', variables('sqlServerName'))]"
+                ],
+                "location": "[resourceGroup().location]",
+                "name": "AllowAllWindowsAzureIps",
+                "properties": {
+                    "startIpAddress": "0.0.0.0",
+                    "endIpAddress": "0.0.0.0"
+                },
+                "type": "firewallrules"
+            }
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases",
+            "name": "[variables('databaseNameResource')]",
+            "apiVersion": "2014-04-01-preview",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "variables('databaseName')"
+            },
+            "dependsOn": [
+                "[variables('sqlServerName')]"
+            ],
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "edition": "Basic",
+                "maxSizeBytes": "1073741824",
+                "requestedServiceObjectiveName": "Basic"
+            }
+        },
+        {
+              "type": "Microsoft.Storage/storageAccounts",
+              "name": "[variables('hostStorage')]",
+              "apiVersion": "2015-06-15",
+              "location": "[resourceGroup().location]",
+              "tags": {
+                  "displayName": "[variables('hostname')] Storage Account"
+              },
+              "properties": {
+                  "accountType": "Standard_LRS"
+              }
+        },
+        {
+              "apiVersion": "2015-06-15",
+              "type": "Microsoft.Network/publicIPAddresses",
+              "name": "[concat(variables('hostname'), '-pip')]",
+              "location": "[resourceGroup().location]",
+              "tags": {
+                  "displayName": "PublicIPAddress"
+              },
+              "properties": {
+                  "publicIPAllocationMethod": "Dynamic",
+                  "dnsSettings": {
+                      "domainNameLabel": "[toLower(variables('hostname'))]"
+                  }
+              }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[variables('hostVirtualNetwork')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "VirtualNetwork"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[concat(variables('hostVirtualNetwork'), '-Subnet')]",
+                        "properties": {
+                            "addressPrefix": "10.0.0.0/24"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[concat(variables('hostname'), '-nic')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIPAddresses/', variables('hostname'), '-pip')]",
+                "[concat('Microsoft.Network/virtualNetworks/', variables('hostVirtualNetwork'))]"
+            ],
+            "tags": {
+                "displayName": "[concat(variables('hostname'), '-nic')]"
+            },
+            "properties": {
+                "ipConfigurations": [
+                 {
+                    "name": "ipconfig1",
+                    "properties": {
+                        "privateIPAllocationMethod": "Dynamic",
+                        "publicIPAddress": {
+                            "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('hostname'), '-pip'))]"
+                        },
+                        "subnet": {
+                            "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('hostVirtualNetwork')), '/subnets/', variables('hostVirtualNetwork'), '-Subnet')]"
+                        }
+                    }
+                }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[variables('hostname')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', variables('hostStorage'))]",
+                "[concat('Microsoft.Network/networkInterfaces/', variables('hostname'), '-nic')]"
+            ],
+            "tags": {
+                "displayName": "[variables('hostname')]"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_D1"
+                },
+                "osProfile": {
+                    "computerName": "[variables('hostname')]",
+                    "adminUsername": "[variables('hostAdminUsername')]",
+                    "adminPassword": "[variables('hostAdminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                      "publisher": "Canonical",
+                      "offer": "UbuntuServer",
+                      "sku": "14.04.2-LTS",
+                      "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat(variables('hostname'), '-OSDisk')]",
+                        "vhd": {
+                            "uri": "[concat('http://', toLower(variables('hostStorage')), '.blob.core.windows.net/vhds/', variables('hostname'), '-OSDisk.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                    {
+                        "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('hostname'), '-nic'))]"
+                    }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(variables('hostname'), '/DockerExtension')]",
+            "apiVersion": "2015-05-01-preview",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('hostname'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "DockerExtension",
+                "typeHandlerVersion": "1.0",
+                "autoUpgradeMinorVersion": true,
+                "protectedSettings": {
+                    "environment": {
+                        "DATABASETYPE": "SQLSERVER",
+                        "DATABASEHOSTNAME": "[concat(reference(resourceId('Microsoft.SQL/servers/', variables('sqlServerName'))).fullyQualifiedDomainName,':1433')]",
+                        "DATABASE_DB_NAME": "[variables('databaseName')]",
+                        "DATABASEUSERNAME": "[variables('databaseUsername')]",
+                        "DATABASEPASSWORD": "[variables('databasePassword')]",
+                        "STORAGE_CONTAINER": "mendix-container",
+                        "STORAGE_ACCOUNTNAME": "[variables('storageAccountName')]",
+                        "ADMIN_PASSWORD": "[variables('mxAdminPassword')]",
+                        "VPC_DB_TYPE": "PostgreSQL",
+                        "VPC_DB_HOSTNAME": "deployerdb:5432",
+                        "VPC_DB_DATABASE": "[variables('vpcdDbdatabase')]",
+                        "VPC_DB_USERNAME": "[variables('vpcdDbUsername')]",
+                        "VPC_DB_PASSWORD": "[variables('vpcdDbPassword')]",
+                        "VPC_ADMIN_PASSWORD": "[variables('mxAdminPassword')]",
+                        "POSTGRES_USER": "[variables('vpcdDbUsername')]",
+                        "POSTGRES_PASSWORD": "[variables('vpcdDbPassword')]",
+                        "POSTGRES_DB": "[variables('vpcdDbdatabase')]",
+                        "PREF_KEY": "[parameters('prefKey')]",
+                        "PREF_VALUE": "[parameters('prefValue')]",
+                        "VPC_PREF_KEY": "[parameters('vpcPrefKey')]",
+                        "VPC_PREF_VALUE": "[parameters('vpcPrefValue')]"
+                    }
+                },
+                "settings": {
+                    "compose": {
+                        "web": {
+                            "image": "mendix/nginx_azure",
+                            "ports": [
+                                "80:80",
+                                "443:443"
+                            ]
+                            ,
+                            "links": [
+                                "mendixapp",
+                                "vpcdeployer"
+                            ]
+
+                        },
+                        "mendixapp": {
+                            "image": "mendix/mendix_azure:custom_m2ee",
+                            "environment": [
+                                "DATABASETYPE",
+                                "DATABASEHOSTNAME",
+                                "DATABASE_DB_NAME",
+                                "DATABASEUSERNAME",
+                                "DATABASEPASSWORD",
+                                "STORAGE_CONTAINER",
+                                "STORAGE_ACCOUNTNAME",
+                                "ADMIN_PASSWORD",
+                                "PREF_KEY",
+                                "PREF_VALUE"
+                            ],
+                            "ports": [
+                                "8000"
+                            ],
+                            "volumes": [
+                                "./opt/mendix:/opt/mendix"
+                            ]
+                        },
+                        "vpcdeployer": {
+                            "image": "mendix/vpcdeployer",
+                            "environment": [
+                                "VPC_DB_TYPE",
+                                "VPC_DB_HOSTNAME",
+                                "VPC_DB_DATABASE",
+                                "VPC_DB_USERNAME",
+                                "VPC_DB_PASSWORD",
+                                "VPC_ADMIN_PASSWORD",
+                                "VPC_PREF_KEY",
+                                "VPC_PREF_VALUE"
+                            ],
+                            "ports": [
+                                "9000"
+                            ],
+                            "links": [
+                                "deployerdb"
+                            ],
+                            "volumes": [
+                                "./opt/mendix:/opt/mendix",
+                                "/var/run/docker.sock:/var/run/docker.sock"
+                            ]
+                        },
+                        "deployerdb": {
+                            "image": "postgres",
+                            "environment": [
+                                "POSTGRES_USER",
+                                "POSTGRES_PASSWORD",
+                                "POSTGRES_DB"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "Virtual Machine Endpoint": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', concat(variables('hostname'), '-pip'))).dnsSettings.fqdn]"
+        },
+        "sql endpoint":{
+            "type": "string",
+            "value": "[concat(reference(resourceId('Microsoft.SQL/servers/', variables('sqlServerName'))).fullyQualifiedDomainName,':1433')]"
+        },
+        "VPC deployer Endpoint": {
+            "type": "string",
+            "value": "[concat('https://',reference(resourceId('Microsoft.Network/publicIPAddresses', concat(variables('hostname'), '-pip'))).dnsSettings.fqdn, '/vpcdeployer/')]"
+        },
+        "databasePassword": {
+            "type": "string",
+            "value": "[variables('databasePassword')]"
+        },
+        "hostAdminPassword": {
+            "type": "string",
+            "value": "[variables('hostAdminPassword')]"
+        },
+        "mxAdminPassword": {
+            "type": "string",
+            "value": "[variables('mxAdminPassword')]"
+        }
+
+    }
+}
