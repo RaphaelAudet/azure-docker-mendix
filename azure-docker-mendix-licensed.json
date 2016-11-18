@@ -34,7 +34,7 @@
 
         "vpcdDbUsername": "mendix",
         "vpcdDbdatabase": "[variables('vpcdDbUsername')]",
-        "vpcdDbPassword": "[concat(X2!',uniqueString(resourceGroup().id))]"
+        "vpcdDbPassword": "[concat('X2!',uniqueString(resourceGroup().id))]"
     },
     "resources": [
         {
