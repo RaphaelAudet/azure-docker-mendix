@@ -57,6 +57,10 @@ Once the installation is completed, you should be able to inspect the details of
 
 The installation brings as output the ```VPC DEPLOYER ENDPOINT``` among other values. You will have to access to the VPC Deployer copying that value to your browser.
 
+You may access your endpoint with :
+* __VPC deployer Endpoint__
+* __Mendix Application Password__
+
 ## 4. Deploy your Mendix Application
 You have to follow the steps defined in the VPC Deployer as indicated in the picture below.
 
