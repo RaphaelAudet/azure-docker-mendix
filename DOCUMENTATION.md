@@ -56,10 +56,12 @@ Once the installation is completed, you should be able to inspect the details of
 > To know more about how to manage resource groups, please click [here](https://docs.microsoft.com/nl-nl/azure/azure-portal/resource-group-portal)
 
 The installation brings as output the ```VPC DEPLOYER ENDPOINT``` among other values. You will have to access to the VPC Deployer copying that value to your browser.
+ 
+You can access your application and the vpcdeployer with following credentials:
+* Username : MxAmin
+* Password : Provided during the template creation  (and available as output information as __Mendix Application Password__)
 
-You may access your endpoint with :
-* __VPC deployer Endpoint__
-* __Mendix Application Password__
+You must change Mendix users "MxAdmin" password
 
 ## 4. Deploy your Mendix Application
 You have to follow the steps defined in the VPC Deployer as indicated in the picture below.
