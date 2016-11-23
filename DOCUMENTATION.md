@@ -39,7 +39,7 @@ In the [Azure Marketplace](https://azure.microsoft.com/en-us/marketplace/), you 
 - Mendix Pro Edition - 50 users
 - Mendix Pro Edition - 100 users
 - Mendix Pro Edition - 250 users
-- Mendix Pro Edition - BYOL
+- Mendix Pro Edition - BYOL (Bring Your Own License)
 
 ### 3.2 Start template
 ![Select template](./resources/mendix_select_template.png)
@@ -48,28 +48,23 @@ As indicated above, you select the template and click the button 'Create' in ord
 
 > Depending on Azure region of your choice, the creation may take several minutes.
 
-### 3.3 VPC Portal
-![Deployment DNS Name](./resources/deployment_public_ip.png)
+### 3.3 Access VPC Deployer
+![Deployment DNS Name](./resources/deployment_details.png)
 
-Once the installation is completed, you should be able to inspect the resources created as you can see in the picture above.
+Once the installation is completed, you should be able to inspect the details of the deployment selecting the resource group used for the deployment and then point to its deployments section, as you can see in the picture above.
 
-The public IP resource is the endpoint you will use to access your VPC Deployer instance and your app once is deployed.
+> To know more about how to manage resource groups, please click [here](https://docs.microsoft.com/nl-nl/azure/azure-portal/resource-group-portal)
 
+The installation brings as output the ```VPC DEPLOYER ENDPOINT``` among other values. You will have to access to the VPC Deployer copying that value to your browser.
 
-- Mendix App: ``` DNS_NAME/ ```
-- VPC Deployer: ``` DNS_NAME/vpcdeployer ```
-
-
-### 3.4 Upload MDA and Config file
-You have to follow the steps defined in the VPC Deployer
+## 4. Deploy your Mendix Application
+You have to follow the steps defined in the VPC Deployer as indicated in the picture below.
 
 ![VPC Deployer](./resources/vpc_deployer.png)
 
-
-## 4. Deploying your Mendix Application
-
-To deploy the new app, VPC Deployer will shutdown any application container running at that moment, with your confirmation, before to spin up a new one with the new application files.
+> To deploy the new app, VPC Deployer will shutdown any application container running at that moment, with your confirmation, before to spin up a new one with the new application files.
 
 ## 5. Related Content
 
 - [Microsoft Azure Documentation](https://docs.microsoft.com/en-us/azure/)
+- [Docker Documentation](https://docs.docker.com/)
