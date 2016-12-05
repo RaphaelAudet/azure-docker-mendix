@@ -1,6 +1,5 @@
 # azure-docker-mendix
-
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMendix%2Fazure-docker-mendix%2Fmaster%2Fazure-docker-mendix.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMendix%2Fazure-docker-mendix%2F66136e74f8c16f82e05102c4a120bc61f2026af5%2Fazure-docker-mendix.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 
