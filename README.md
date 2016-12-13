@@ -19,16 +19,6 @@ This allocates a new storage account and Azure SQL database for your application
 
 *  *Optional*: If you wish to customize your Mendix application configuration (for application constants...) you should use the template *m2ee.azure.yaml* file and provide the location of your configuration
 
-
-## Local testing
-
-You may run your application locally for testing. You must make sure your configuration *YAML* defines correct storage and database values.
-
-```
-cd test
-docker-compose up
-```
-
 # Under development
 
 This project is still under development.
