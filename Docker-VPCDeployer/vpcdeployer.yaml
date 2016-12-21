@@ -32,7 +32,6 @@ mxruntime:
   VPCDeployer.AppConfig_Destination: "/opt/mendix"
   VPCDeployer.AppConfig_File_Name: "m2ee.yaml"
   VPCDeployer.AppModel_Destination: "/opt/mendix"
-  VPCDeployer.AppModel_Shared_Folder: "/opt/mendix"
   VPCDeployer.AppModel_File_Name: "application.mda"
   VPCDeployer.Log_Node: "VPC_Deployer"
   DockerConnectors.Docker_Socket: "/var/run/docker.sock"
