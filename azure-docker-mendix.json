@@ -83,38 +83,41 @@
     "variables": {
         "databaseName": "[uniqueString(resourceGroup().id)]",
         "sqlServerName": "[concat( substring(uniqueString(resourceGroup().name), 0, 10), '-', 'sql')]",
+        "databaseNameResource": "[concat(variables('sqlServerName'), '/', variables('databaseName'))]",
+
         "hostname": "[concat(substring(uniqueString(resourceGroup().name), 0, 10), '-', 'vm')]",
         "hostStorage": "[concat(uniqueString(resourceGroup().name), 'vmst')]",
         "hostVirtualNetwork": "[concat(variables('hostname'), '-vnet')]",
-        "databaseNameResource": "[concat(variables('sqlServerName'), '/', variables('databaseName'))]",
         "vpcdDbUsername": "mendix",
         "vpcdDbPassword": "[uniqueString(resourceGroup().id)]",
         "vpcdDbdatabase": "[variables('vpcdDbUsername')]",
-        "license": "50",
-        "sku": "[concat('MENDIX_DOCKER_', variables('license'))]",
-        "plan": "[concat('MENDIX_DOCKER_', variables('license'))]",
+
         "sshKeyPath": "[concat('/home/',parameters('hostAdminUsername'),'/.ssh/authorized_keys')]",
         "osProfile": "[variables(concat('osProfile', parameters('authenticationType')))]",
         "osProfilepassword": {
-          "adminPassword": "[parameters('hostAdminPassword')]",
-          "adminUsername": "[parameters('hostAdminUsername')]",
-          "computerName": "[variables('hostname')]"
+            "adminPassword": "[parameters('hostAdminPassword')]",
+            "adminUsername": "[parameters('hostAdminUsername')]",
+            "computerName": "[variables('hostname')]"
         },
         "osProfilesshPublicKey": {
-          "adminUsername": "[parameters('hostAdminUsername')]",
-          "computerName": "[variables('hostname')]",
-          "linuxConfiguration": {
-              "disablePasswordAuthentication": "true",
-              "ssh": {
-                  "publicKeys": [
-                      {
-                          "path": "[variables('sshKeyPath')]",
-                          "keyData": "[parameters('sshKeyData')]"
-                      }
-                  ]
-              }
-          }
-        }
+            "adminUsername": "[parameters('hostAdminUsername')]",
+            "computerName": "[variables('hostname')]",
+            "linuxConfiguration": {
+                "disablePasswordAuthentication": "true",
+                "ssh": {
+                    "publicKeys": [{
+                            "path": "[variables('sshKeyPath')]",
+                            "keyData": "[parameters('sshKeyData')]"
+                        }
+                    ]
+                }
+            }
+        },
+
+        "publisher": "Canonical",
+        "offer": "UbuntuServer",
+        "sku": "14.04.2-LTS",
+        "plan": {}
     },
     "resources": [
         {
@@ -257,15 +260,16 @@
             },
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "[parameters('vmSize')]"
+                  "vmSize": "[parameters('vmSize')]"
                 },
+                "plan": "[variables('plan')]",
                 "osProfile": "[variables('osProfile')]",
                 "storageProfile": {
                     "imageReference": {
-                      "publisher": "Canonical",
-                      "offer": "UbuntuServer",
-                      "sku": "14.04.2-LTS",
-                      "version": "latest"
+                        "publisher": "[variables('publisher')]",
+                        "offer": "[variables('offer')]",
+                        "sku": "[variables('sku')]",
+                        "version": "latest"
                     },
                     "osDisk": {
                         "name": "[concat(variables('hostname'), '-OSDisk')]",
@@ -277,10 +281,9 @@
                     }
                 },
                 "networkProfile": {
-                    "networkInterfaces": [
-                    {
-                        "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('hostname'), '-nic'))]"
-                    }
+                    "networkInterfaces": [{
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('hostname'), '-nic'))]"
+                        }
                     ]
                 }
             }
