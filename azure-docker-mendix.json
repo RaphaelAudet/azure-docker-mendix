@@ -85,7 +85,7 @@
         "sqlServerName": "[concat( substring(uniqueString(resourceGroup().name), 0, 10), '-', 'sql')]",
         "databaseNameResource": "[concat(variables('sqlServerName'), '/', variables('databaseName'))]",
 
-        "hostname": "[concat(substring(uniqueString(resourceGroup().name), 0, 10), '-', 'vm')]",
+        "hostname": "[concat('vm',substring( uniqueString(resourceGroup().name), 0, 10))]",
         "hostStorage": "[concat(uniqueString(resourceGroup().name), 'vmst')]",
         "hostVirtualNetwork": "[concat(variables('hostname'), '-vnet')]",
         "vpcdDbUsername": "mendix",
@@ -116,8 +116,7 @@
 
         "publisher": "Canonical",
         "offer": "UbuntuServer",
-        "sku": "14.04.2-LTS",
-        "plan": {}
+        "sku": "14.04.2-LTS"
     },
     "resources": [
         {
@@ -180,7 +179,7 @@
         },
         {
             "type": "Microsoft.Network/publicIPAddresses",
-                  "apiVersion": "2015-06-15",
+            "apiVersion": "2015-06-15",
             "name": "[concat(variables('hostname'), '-pip')]",
             "location": "[resourceGroup().location]",
             "tags": {
@@ -262,7 +261,6 @@
                 "hardwareProfile": {
                   "vmSize": "[parameters('vmSize')]"
                 },
-                "plan": "[variables('plan')]",
                 "osProfile": "[variables('osProfile')]",
                 "storageProfile": {
                     "imageReference": {
@@ -274,7 +272,7 @@
                     "osDisk": {
                         "name": "[concat(variables('hostname'), '-OSDisk')]",
                         "vhd": {
-                            "uri": "[concat('http://', toLower(variables('hostStorage')), '.blob.core.windows.net/vhds/', variables('hostname'), '-OSDisk.vhd')]"
+                            "uri": "[concat('http://', toLower(parameters('storageAccountName')), '.blob.core.windows.net/vhds/', variables('hostname'), '-OSDisk.vhd')]"
                         },
                         "caching": "ReadWrite",
                         "createOption": "FromImage"
