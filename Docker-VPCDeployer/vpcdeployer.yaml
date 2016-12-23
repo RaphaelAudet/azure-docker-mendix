@@ -34,6 +34,6 @@ mxruntime:
   VPCDeployer.AppModel_Destination: "/opt/mendix"
   VPCDeployer.AppModel_File_Name: "application.mda"
   VPCDeployer.Log_Node: "VPC_Deployer"
-  DockerConnectors.Docker_Socket: "/var/run/docker.sock"
+  DockerConnectors.Docker_Socket: "/docker.sock"
   DockerConnectors.Log_Node: "Docker Connectors"
   VPCDeployer.AppContainer_Name: "compose_mendixapp_1"
