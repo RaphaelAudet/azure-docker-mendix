@@ -3,7 +3,7 @@
 # VERSION               0.2
 
 FROM debian:jessie-backports
-MAINTAINER Mendix Smart connectors <smartconnectors@mendix.com>
+MAINTAINER Mendix Digital Ecosystems <digitalecosystems@mendix.com>
 
 RUN apt-key adv --fetch-keys http://packages.mendix.com/mendix-debian-archive-key.asc
 RUN echo "deb http://packages.mendix.com/platform/debian/ jessie main" > /etc/apt/sources.list.d/mendix.list
