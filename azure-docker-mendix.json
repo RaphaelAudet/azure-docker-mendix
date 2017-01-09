@@ -379,7 +379,7 @@
                             ],
                             "volumes": [
                                 "./opt/mendix:/opt/mendix",
-                                "/var/run/docker.sock:/docker.sock",
+                                "/var/run/docker.sock:/var/run/docker.sock",
                                 "/srv/.mendix:/srv/.mendix"
                             ]
                         },
