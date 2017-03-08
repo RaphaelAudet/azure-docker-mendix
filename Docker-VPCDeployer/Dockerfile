@@ -23,7 +23,7 @@ COPY vpcdeployer.yaml /root/.m2ee/m2ee.yaml
 
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
-COPY m2ee.experimental /usr/bin/m2ee
+COPY m2ee.701.monkeypatch /usr/bin/m2ee
 
 COPY vpc_deployer.policy /root/vpc_deployer.policy
 
